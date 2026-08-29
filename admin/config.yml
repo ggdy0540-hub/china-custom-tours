@@ -1,12 +1,13 @@
 # Decap CMS configuration — Jing · Meet China
-# Auth uses Netlify's free OAuth proxy. Replace SITE_DOMAIN below with your
-# Netlify subdomain (e.g. brave-panda-123456.netlify.app) after creating it.
+# Auth uses Netlify's free OAuth proxy.
+# GitHub OAuth App callback must be: https://api.netlify.com/auth/done
 
 backend:
   name: github
   repo: ggdy0540-hub/china-custom-tours
   branch: main
-  site_domain: dynamic-bombolone-713dfe.netlify.app
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
 
 # Where uploaded images are stored / referenced
 media_folder: "assets/img"
