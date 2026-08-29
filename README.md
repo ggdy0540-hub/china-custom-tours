@@ -4,7 +4,7 @@ Bespoke, privately-guided tours across China. This is a **static site** (plain H
 
 ## Deploy to Vercel (one click)
 
-> Push this repo to GitHub first, then replace `<你的GitHub用户名>` in the button URL below with your actual username, or just use the manual import.
+> Push this repo to GitHub first, then replace `ggdy0540-hub` in the button URL below with your actual username, or just use the manual import.
 
 
 
