@@ -6,7 +6,9 @@ Bespoke, privately-guided tours across China. This is a **static site** (plain H
 
 > Push this repo to GitHub first, then replace `<你的GitHub用户名>` in the button URL below with your actual username, or just use the manual import.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/<你的GitHub用户名>/china-custom-tours)
+
+
+![Deploy with Vercel](https://vercel.com/button)
 
 **Manual import:** Vercel → *Add New… → Project* → *Import Git Repository* → select this repo → *Deploy*. Vercel auto-detects the static config from `vercel.json`.
 

@@ -43,10 +43,10 @@
   }
 
   /* ----- Contact form: validate + real submission to email backend -----
-     Uses Formsubmit (no account needed): submissions are emailed to the
-     address baked into FORM_ENDPOINT. First send triggers a confirmation
-     email to that address — click the link once to activate. */
-  var FORM_ENDPOINT = "https://formsubmit.co/zjonny338@gmail.com";
+     Uses Web3Forms (free, no account/activation email needed): submissions
+     go to the inbox tied to ACCESS_KEY below. Get a free key at
+     https://web3forms.com (enter your email, copy the key). */
+  var FORM_ENDPOINT = "https://api.web3forms.com/submit";
 
   document.querySelectorAll("form.js-form").forEach(function (form) {
     var errorEl = form.querySelector(".form-error");
@@ -92,7 +92,7 @@
 
       var data = new FormData(form);
 
-      fetch(FORM_ENDPOINT + "?_format=json", {
+      fetch(FORM_ENDPOINT, {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" }
@@ -101,7 +101,10 @@
           if (!res.ok) throw new Error("HTTP " + res.status);
           return res.json();
         })
-        .then(function () {
+        .then(function (json) {
+          if (!json || json.success !== true) {
+            throw new Error((json && json.message) ? json.message : "Submission failed");
+          }
           form.style.display = "none";
           var success = form.parentElement.querySelector(".form-success");
           if (success) {
