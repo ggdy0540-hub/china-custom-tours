@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Jing · Meet China</title>
+  <meta name="description" content="Contact Jing · Meet China. Send your travel ideas and get a reply within 24 hours. Offices in Shanghai and Beijing, 24/7 English-speaking support." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23b03a2e'/><text x='32' y='44' font-size='36' text-anchor='middle' fill='white' font-family='serif'>中</text></svg>" />
+  <script>document.documentElement.classList.add('js-reveal');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- ================= Header ================= -->
+  <header class="site-header">
+    <div class="container nav-bar">
+      <a href="index.html" class="brand" aria-label="Jing · Meet China — Home"><img src="assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">Jing · Meet China</span><span class="brand-sub">Tailor-Made Travel</span></span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="tours.html">Tours &amp; Services</a>
+        <a href="contact.html" class="active">Contact</a>
+        <a href="contact.html" class="nav-cta"><span class="btn btn-primary btn-sm">Start Planning</span></a>
+      </nav>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= Page Hero ================= -->
+    <section class="page-hero" style="background-image: url('assets/img/dest-guilin.png');">
+      <div class="container">
+        <span class="breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; Contact</span>
+        <h1>Let's Plan Your Trip Together</h1>
+        <p>Questions, ideas, or ready to start? Send us a message — a real travel designer (not a bot) will reply within 24 hours.</p>
+      </div>
+    </section>
+
+    <!-- ================= Contact Content ================= -->
+    <section class="section">
+      <div class="container">
+        <div class="contact-split">
+
+          <!-- Form -->
+          <div class="contact-form-panel reveal">
+            <span class="eyebrow">Send a Message</span>
+            <h2 class="display-h2" style="margin: 14px 0 10px;">Tell us about your trip</h2>
+            <p class="form-lead">A real travel designer reads every message. Share a few details and we'll reply within 24 hours.</p>
+            <form class="js-form" novalidate>
+              <input type="hidden" name="_subject" value="New travel inquiry — Jing · Meet China" />
+              <input type="hidden" name="_format" value="json" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="c-name">Full Name <span class="req">*</span></label>
+                  <input type="text" id="c-name" name="name" data-required placeholder="e.g. Emily Carter" />
+                  <span class="error-msg">Please enter your name.</span>
+                </div>
+                <div class="form-field">
+                  <label for="c-email">Email Address <span class="req">*</span></label>
+                  <input type="email" id="c-email" name="email" data-required placeholder="you@example.com" />
+                  <span class="error-msg">Please enter a valid email address.</span>
+                </div>
+                <div class="form-field">
+                  <label for="c-when">Planned Travel Time</label>
+                  <input type="text" id="c-when" name="travel-time" placeholder="e.g. October 2026, ~10 days" />
+                </div>
+                <div class="form-field">
+                  <label for="c-pref">Travel Preference</label>
+                  <select id="c-pref" name="preference">
+                    <option value="">Please select…</option>
+                    <option>Cultural immersion</option>
+                    <option>Nature &amp; landscapes</option>
+                    <option>Food &amp; markets</option>
+                    <option>Family-friendly journey</option>
+                    <option>Premium &amp; luxury travel</option>
+                    <option>Not sure yet — surprise me</option>
+                  </select>
+                </div>
+                <div class="form-field full">
+                  <label for="c-message">Your Message <span class="req">*</span></label>
+                  <textarea id="c-message" name="message" data-required placeholder="Tell us about your dream trip — places you long to see, pace you prefer, anything that matters to you…"></textarea>
+                  <span class="error-msg">Please tell us a little about your trip.</span>
+                </div>
+                <div class="form-field full">
+                  <button type="submit" class="btn btn-primary">Send Message <span class="arr">&rarr;</span></button>
+                </div>
+              </div>
+              <p class="form-note">We answer every inquiry personally within 24 hours (usually much faster). Your details stay private — always.</p>
+              <p class="form-error" role="alert" hidden></p>
+            </form>
+            <div class="form-success" role="status">
+              <div class="success-icon"><svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <h3>Message received — thank you!</h3>
+              <p>A travel designer will reply to your inbox within 24 hours. In the meantime, feel free to browse our signature journeys for inspiration.</p>
+            </div>
+          </div>
+
+          <!-- Aside: branded info panel -->
+          <aside class="contact-info-panel reveal reveal-d1">
+            <span class="eyebrow light">Get in Touch</span>
+            <h2 class="info-title">Talk to a real travel designer</h2>
+            <p class="info-lead">No call centers, no bots. Reach our Shanghai team any of these ways — we reply within 24 hours, usually much sooner.</p>
+            <ul class="info-list">
+              <li>
+                <span class="info-ic"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                <div class="info-body">
+                  <span class="info-k">Visit our offices</span>
+                  <span class="info-v">上海市静安区北京西路大厦</span>
+                </div>
+              </li>
+              <li>
+                <span class="info-ic"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+                <div class="info-body">
+                  <span class="info-k">Call or message</span>
+                  <span class="info-v"><a href="tel:+8617782189330">+86 177 8218 9330</a></span>
+                </div>
+              </li>
+              <li>
+                <span class="info-ic"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></span>
+                <div class="info-body">
+                  <span class="info-k">Email us</span>
+                  <span class="info-v"><a href="mailto:zjonny338@gmail.com">zjonny338@gmail.com</a></span>
+                </div>
+              </li>
+              <li>
+                <span class="info-ic"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                <div class="info-body">
+                  <span class="info-k">WeChat</span>
+                  <span class="info-v">ChinaCustomTours</span>
+                </div>
+              </li>
+            </ul>
+            <div class="info-foot">
+              <div class="info-hours">
+                <span class="info-k">Office hours (GMT+8)</span>
+                <div class="hours-grid">
+                  <div><span>Mon – Fri</span><b>09:00–18:00</b></div>
+                  <div><span>Saturday</span><b>10:00–16:00</b></div>
+                  <div><span>Sunday</span><b>Closed</b></div>
+                  <div><span>On-trip</span><b>24 / 7</b></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="cta-band">
+      <div class="container cta-inner">
+        <div>
+          <h2>Not sure where to begin?</h2>
+          <p>Browse our four signature journeys for inspiration — then tell us how you'd make them yours.</p>
+        </div>
+        <a href="tours.html" class="btn btn-primary">Explore Our Tours <span class="arr">&rarr;</span></a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= Footer ================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="brand"><img src="assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">Jing · Meet China</span><span class="brand-sub">Tailor-Made Travel</span></span></div>
+          <p>Private, tailor-made journeys across China for international travelers since 2012. Your journey, your way.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="tours.html">Tours &amp; Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Signature Journeys</h4>
+          <ul>
+            <li><a href="tour-cultural.html">Cultural Discovery</a></li>
+            <li><a href="tour-nature.html">Nature &amp; Landscapes</a></li>
+            <li><a href="tour-culinary.html">Culinary Journey</a></li>
+            <li><a href="tour-family.html">Family Adventures</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Get in Touch</h4>
+          <ul>
+            <li class="info-line"><span class="k">Tel</span><a href="tel:+8617782189330">+86 177 8218 9330</a></li>
+            <li class="info-line"><span class="k">Email</span><a href="mailto:zjonny338@gmail.com">zjonny338@gmail.com</a></li>
+            <li class="info-line"><span class="k">Addr</span><span>上海市静安区北京西路大厦</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> Jing · Meet China. All rights reserved. License No. L-SH-CJ00088.</span>
+        <span class="zh">中国定制游 · 用心每一段旅程</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/editor.js"></script>
+</body>
+</html>

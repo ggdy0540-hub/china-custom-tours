@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 46" width="46" height="46">
+  <rect x="0" y="0" width="46" height="46" rx="9" fill="#b03a2e"/>
+  <rect x="2" y="2" width="42" height="42" rx="7" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+  <text x="23" y="33" font-family="'Noto Serif SC', Georgia, serif" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="500">中</text>
+</svg>

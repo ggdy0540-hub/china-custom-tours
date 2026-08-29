@@ -1,0 +1,7 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+
+# dependency dirs (none currently, kept for safety)
+node_modules/
