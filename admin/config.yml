@@ -6,7 +6,7 @@ backend:
   name: github
   repo: ggdy0540-hub/china-custom-tours
   branch: main
-  site_domain: REPLACE_WITH_NETLIFY_SUBDOMAIN.netlify.app
+  site_domain: dynamic-bombolone-713dfe.netlify.app
 
 # Where uploaded images are stored / referenced
 media_folder: "assets/img"
