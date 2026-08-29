@@ -1,0 +1,108 @@
+# Decap CMS configuration — Jing · Meet China
+# Auth uses Netlify's free OAuth proxy. Replace SITE_DOMAIN below with your
+# Netlify subdomain (e.g. brave-panda-123456.netlify.app) after creating it.
+
+backend:
+  name: github
+  repo: ggdy0540-hub/china-custom-tours
+  branch: main
+  site_domain: REPLACE_WITH_NETLIFY_SUBDOMAIN.netlify.app
+
+# Where uploaded images are stored / referenced
+media_folder: "assets/img"
+public_folder: "/assets/img"
+
+# Editor locale
+locale: en
+
+publish_mode: simple
+
+collections:
+  - name: "pages"
+    label: "网站页面"
+    files:
+      - name: "home"
+        label: "首页 Home"
+        file: "index.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "about"
+        label: "关于我们 About"
+        file: "about.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "contact"
+        label: "联系我们 Contact"
+        file: "contact.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "tours"
+        label: "线路总览 Tours"
+        file: "tours.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "tour-cultural"
+        label: "文化线路 Cultural Tour"
+        file: "tour-cultural.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "tour-culinary"
+        label: "美食线路 Culinary Tour"
+        file: "tour-culinary.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "tour-family"
+        label: "亲子线路 Family Tour"
+        file: "tour-family.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "tour-nature"
+        label: "自然线路 Nature Tour"
+        file: "tour-nature.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-shanghai"
+        label: "目的地·上海 Shanghai"
+        file: "dest-shanghai.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-beijing"
+        label: "目的地·北京 Beijing"
+        file: "dest-beijing.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-xian"
+        label: "目的地·西安 Xi'an"
+        file: "dest-xian.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-chengdu"
+        label: "目的地·成都 Chengdu"
+        file: "dest-chengdu.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-guilin"
+        label: "目的地·桂林 Guilin"
+        file: "dest-guilin.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "dest-zhangjiajie"
+        label: "目的地·张家界 Zhangjiajie"
+        file: "dest-zhangjiajie.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "faq"
+        label: "常见问题 FAQ"
+        file: "faq.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "privacy"
+        label: "隐私政策 Privacy"
+        file: "privacy.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+      - name: "terms"
+        label: "服务条款 Terms"
+        file: "terms.html"
+        fields:
+          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
