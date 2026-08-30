@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>可视化编辑后台 — Jing · Meet China</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #b03030;
+      --brand-dark: #8c2626;
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --line: #e3e6ea;
+      --ink: #1f2733;
+      --ink-soft: #5b6470;
+      --top: #23262d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); }
+    button { font-family: inherit; cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-rows: 58px 1fr;
+      grid-template-columns: 290px 1fr 380px;
+      grid-template-areas: "top top top" "left center right";
+      height: 100vh;
+    }
+
+    /* 顶栏 */
+    .topbar {
+      grid-area: top;
+      background: var(--top);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 16px;
+    }
+    .topbar .logo { font-weight: 700; letter-spacing: .3px; display: flex; align-items: center; gap: 9px; }
+    .topbar .logo .seal { width: 26px; height: 26px; border-radius: 6px; background: var(--brand); color: #fff; display: grid; place-items: center; font-family: "Playfair Display", serif; font-weight: 700; }
+    .topbar .spacer { flex: 1; }
+    .topbar select, .topbar .btn {
+      height: 34px; border-radius: 8px; border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08); color: #fff; font-size: 13px; padding: 0 12px;
+    }
+    .topbar select { background: #2f333c; }
+    .topbar .btn.primary { background: var(--brand); border-color: var(--brand); font-weight: 600; }
+    .topbar .btn.primary:hover { background: var(--brand-dark); }
+    .topbar .btn:hover { background: rgba(255,255,255,.16); }
+    .topbar .btn:disabled { opacity: .55; cursor: default; }
+    .devices { display: flex; gap: 4px; background: rgba(255,255,255,.08); padding: 3px; border-radius: 9px; }
+    .devices button { height: 28px; border: none; background: transparent; color: #cfd3da; border-radius: 6px; padding: 0 10px; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+    .devices button.active { background: #fff; color: var(--ink); font-weight: 600; }
+    .topbar .save-state { font-size: 12px; color: #9aa0aa; min-width: 64px; text-align: right; }
+
+    /* 左栏 区块树 */
+    .left { grid-area: left; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+    .left .head { padding: 14px 16px 10px; font-size: 12px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .6px; display:flex; justify-content:space-between; align-items:center; }
+    .left .head .add { border:none; background:var(--brand); color:#fff; border-radius:6px; width:24px; height:24px; font-size:16px; line-height:1; }
+    .left .list { overflow-y: auto; flex: 1; padding: 0 10px 16px; }
+    .block-item {
+      display: flex; align-items: center; gap: 8px; padding: 10px 10px; border-radius: 9px;
+      border: 1px solid transparent; margin-bottom: 6px; cursor: pointer; background: #fafbfc;
+    }
+    .block-item:hover { background: #f1f3f6; }
+    .block-item.selected { background: #fdeaea; border-color: #f1c4c4; }
+    .block-item .idx { width: 22px; height: 22px; border-radius: 6px; background: #e9ecf1; color: var(--ink-soft); font-size: 11px; font-weight: 600; display: grid; place-items: center; flex: none; }
+    .block-item.selected .idx { background: var(--brand); color: #fff; }
+    .block-item .name { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .block-item .ops { display: none; gap: 2px; }
+    .block-item:hover .ops, .block-item.selected .ops { display: flex; }
+    .block-item .ops button { border: none; background: transparent; color: var(--ink-soft); width: 22px; height: 22px; border-radius: 5px; font-size: 13px; }
+    .block-item .ops button:hover { background: #e3e6ea; color: var(--ink); }
+    .left .empty { padding: 20px 16px; color: var(--ink-soft); font-size: 13px; }
+
+    /* 中栏 预览 */
+    .center { grid-area: center; background: #e9ebef; display: flex; flex-direction: column; min-height: 0; }
+    .center .bar { height: 38px; border-bottom: 1px solid var(--line); background: #f7f8fa; display: flex; align-items: center; padding: 0 14px; font-size: 12px; color: var(--ink-soft); gap: 8px; }
+    .center .stage { flex: 1; overflow: auto; padding: 18px; display: flex; justify-content: center; }
+    .device { background: #fff; box-shadow: 0 8px 30px rgba(0,0,0,.12); border-radius: 10px; overflow: hidden; transition: width .25s ease; height: 100%; }
+    .device.desktop { width: 100%; }
+    .device.tablet { width: 768px; flex: none; }
+    .device.mobile { width: 375px; flex: none; }
+    .device iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+
+    /* 右栏 属性 */
+    .right { grid-area: right; background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+    .right .head { padding: 14px 16px 10px; font-size: 12px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid var(--line); }
+    .right .body { overflow-y: auto; flex: 1; padding: 14px 16px 24px; }
+    .grp { margin-bottom: 18px; }
+    .grp > .grp-title { font-size: 11px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 9px; }
+    .field { margin-bottom: 13px; }
+    .field label { display: block; font-size: 12px; color: var(--ink-soft); margin-bottom: 5px; font-weight: 500; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-size: 13px;
+      color: var(--ink); font-family: inherit; background: #fff; resize: vertical;
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(176,48,48,.12); }
+    .field textarea.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 12px; line-height: 1.55; min-height: 260px; white-space: pre; tab-size: 2; }
+    .hint { font-size: 11px; color: #97a0ad; margin-top: 4px; line-height: 1.5; }
+    .tag { display:inline-block; font-size:11px; background:#eef1f5; color:var(--ink-soft); padding:2px 7px; border-radius:5px; margin-left:6px; }
+    .divider { height:1px; background:var(--line); margin: 4px 0 18px; }
+
+    .seg { display: flex; gap: 0; background: #f1f3f6; border-radius: 8px; padding: 3px; }
+    .seg button { flex: 1; border: none; background: transparent; color: var(--ink-soft); font-size: 12px; font-weight: 500; padding: 7px 0; border-radius: 6px; }
+    .seg button.active { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+    /* 加载/提示 */
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: #23262d; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 50; }
+    .toast.show { opacity: 1; }
+    .toast.ok { background: #2e7d4f; }
+    .toast.err { background: #b03030; }
+
+    /* 图片字段：缩略图 + 上传 */
+    .img-thumb { width: 100%; border: 1px dashed var(--line); border-radius: 8px; background: #f6f7f9; min-height: 70px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 8px; }
+    .img-thumb img { max-width: 100%; max-height: 160px; display: block; }
+    .img-thumb.empty::after { content: '无图片'; color: #aab2bd; font-size: 12px; }
+    .upload-row { display: flex; gap: 8px; margin-bottom: 4px; }
+    .btn-up { flex: 1; border: 1px solid var(--brand); background: #fff; color: var(--brand); font-size: 12px; font-weight: 600; padding: 9px 10px; border-radius: 8px; cursor: pointer; }
+    .btn-up:hover { background: var(--brand); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="logo"><span class="seal">中</span> 可视化编辑后台</div>
+      <select id="pageSelect"></select>
+      <div class="devices" id="devices">
+        <button data-dev="desktop" class="active">🖥 桌面</button>
+        <button data-dev="tablet">📱 平板</button>
+        <button data-dev="mobile">📲 手机</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn" id="rebuildBtn">重新构建</button>
+      <span class="save-state" id="saveState">未修改</span>
+      <button class="btn primary" id="saveBtn">保存修改</button>
+    </div>
+
+    <div class="left">
+      <div class="head"><span>内容区块</span><button class="add" id="addBlock" title="新增区块">＋</button></div>
+      <div class="list" id="blockList"></div>
+    </div>
+
+    <div class="center">
+      <div class="bar"><span id="previewLabel">实时预览</span><span style="color:#aab">· 修改右侧字段即时刷新</span></div>
+      <div class="stage" id="stage">
+        <div class="device desktop" id="device">
+          <iframe id="preview" title="预览"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="head">属性面板</div>
+      <div class="body" id="rightBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== 站点常量（与 src/_data/site.json 同步） =====
+    var SITE = {
+      brandName: "Jing · Meet China",
+      brandSub: "Tailor-Made Travel",
+      tel: "+86 177 8218 9330",
+      telHref: "+8617782189330",
+      email: "zjonny338@gmail.com",
+      address: "上海市静安区北京西路大厦",
+      footerText: "Private, tailor-made journeys across China for international travelers since 2012. Your journey, your way.",
+      license: "License No. L-SH-CJ00088.",
+      footerZh: "中国定制游 · 用心每一段旅程"
+    };
+
+    var state = { name: null, label: null, active: 'index', title: '', description: '', sections: [], selected: 0, dirty: false, rightMode: 'fields' };
+    var renderTimer = null;
+    var frameReady = false;
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    // 把图片地址解析为可在此后台直接访问的绝对地址（用于缩略图预览）
+    function imgAbs(src) {
+      if (!src) return '';
+      if (/^https?:\/\//i.test(src)) return src;
+      if (src.indexOf('/assets/') === 0) return src;
+      var u = src.replace(/^\.\.\//, '').replace(/^assets\//, '/assets/');
+      if (u.indexOf('/assets/') !== 0) u = '/' + u;
+      return u;
+    }
+
+    // 上传本地图片：读取为 base64 -> POST /api/upload -> 返回 { url, published }
+    function uploadImage(file) {
+      return new Promise(function (resolve, reject) {
+        if (!file) return reject(new Error('未选择文件'));
+        if (file.size > 8 * 1024 * 1024) return reject(new Error('图片过大（上限 8MB）'));
+        var reader = new FileReader();
+        reader.onload = function () {
+          var b64 = String(reader.result).split(',')[1] || '';
+          var fname = file.name.replace(/[^A-Za-z0-9._\-]/g, '');
+          if (!/\.(png|jpe?g|jfif|webp|gif|svg|avif|bmp|tif|tiff)$/i.test(fname)) {
+            // 若文件名没有扩展名，优先用浏览器提供的 MIME 类型，否则后端会通过魔数自动识别
+            var ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+            fname = 'upload-' + Date.now().toString(36) + '.' + ext;
+          }
+          fetch('/api/upload', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: fname, data: b64 })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+              if (!j.ok) return reject(new Error(j.error || j.warn || '上传失败'));
+              resolve(j);
+            })
+            .catch(function (e) { reject(new Error('上传出错：' + e)); });
+        };
+        reader.onerror = function () { reject(new Error('读取文件失败')); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function nav(active) {
+      var items = (SITE.nav && SITE.nav.length) ? SITE.nav : [
+        { label: 'Home', href: '/index.html' }, { label: 'About Us', href: '/about.html' },
+        { label: 'Tours & Services', href: '/tours.html' }, { label: 'Contact', href: '/contact.html' }
+      ];
+      var links = items.map(function (it) {
+        var base = (it.href || '').replace(/\.html$/, '').replace(/^\//, '');
+        var on = base === active || (base === 'tours' && active.slice(0, 5) === 'tour-');
+        return '<a href="' + it.href + '"' + (on ? ' class="active"' : '') + '>' + esc(it.label) + '</a>';
+      }).join('');
+      return '<header class="site-header"><div class="container nav-bar">' +
+        '<a href="/index.html" class="brand"><img src="/assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" /><span class="brand-text"><span class="brand-name">' + esc(SITE.brandName) + '</span><span class="brand-sub">' + esc(SITE.brandSub) + '</span></span></a>' +
+        '<nav class="nav-links" aria-label="Main navigation">' + links + '<a href="/contact.html" class="nav-cta"><span class="btn btn-primary btn-sm">Start Planning</span></a></nav>' +
+        '<button class="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>' +
+        '</div></header>';
+    }
+
+    function footer() {
+      return '<footer class="site-footer"><div class="container">' +
+        '<div class="footer-main"><div class="footer-brand">' +
+        '<div class="brand"><img src="/assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" /><span class="brand-text"><span class="brand-name">' + esc(SITE.brandName) + '</span><span class="brand-sub">' + esc(SITE.brandSub) + '</span></span></div>' +
+        '<p>' + esc(SITE.footerText) + '</p></div>' +
+        '<div class="footer-col"><h4>Explore</h4><ul><li><a href="/index.html">Home</a></li><li><a href="/about.html">About Us</a></li><li><a href="/tours.html">Tours & Services</a></li><li><a href="/contact.html">Contact</a></li></ul></div>' +
+        '<div class="footer-col"><h4>Signature Journeys</h4><ul><li><a href="/tour-cultural.html">Cultural Discovery</a></li><li><a href="/tour-nature.html">Nature & Landscapes</a></li><li><a href="/tour-culinary.html">Culinary Journey</a></li><li><a href="/tour-family.html">Family Adventures</a></li></ul></div>' +
+        '<div class="footer-col"><h4>Get in Touch</h4><ul><li class="info-line"><span class="k">Tel</span><a href="tel:' + esc(SITE.telHref) + '">' + esc(SITE.tel) + '</a></li><li class="info-line"><span class="k">Email</span><a href="mailto:' + esc(SITE.email) + '">' + esc(SITE.email) + '</a></li><li class="info-line"><span class="k">Addr</span><span>' + esc(SITE.address) + '</span></li></ul></div>' +
+        '</div><div class="footer-bottom"><span>&copy; <span>2026</span> ' + esc(SITE.brandName) + '. All rights reserved. ' + esc(SITE.license) + '</span> <span style="font-size:.78rem"><a href="/privacy.html" style="color:rgba(255,255,255,.5)">Privacy</a> &middot; <a href="/terms.html" style="color:rgba(255,255,255,.5)">Terms</a> &middot; <a href="/faq.html" style="color:rgba(255,255,255,.5)">FAQ</a></span><span class="zh">' + esc(SITE.footerZh) + '</span></div>' +
+        '</div></footer>';
+    }
+
+    function absPath(html) {
+      return html
+        .replace(/url\((['"]?)\.\.\/assets\/([^'")\s]+)\1\)/g, "url('/assets/$2')")
+        .replace(/url\((['"]?)assets\/([^'")\s]+)\1\)/g, "url('/assets/$2')")
+        .replace(/(src=['"])assets\//g, "$1/assets/")
+        .replace(/(src=['"])\.\.\/assets\//g, "$1/assets/")
+        .replace(/(href=['"])assets\//g, "$1/assets/")
+        .replace(/(href=['"])\.\.\/assets\//g, "$1/assets/");
+    }
+
+    function buildShell() {
+      return '<!DOCTYPE html><html lang="en"><head>' +
+        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+        '<title>' + esc(state.title) + '</title>' +
+        (state.description ? '<meta name="description" content="' + esc(state.description) + '">' : '') +
+        '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+        '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+        '<link rel="stylesheet" href="/assets/css/style.css"><style>body{overflow-x:hidden}' +
+        '.pv-sel{outline:3px solid #b03030 !important;outline-offset:-3px;position:relative}' +
+        '.pv-sel::after{content:"✎ 编辑中";position:absolute;top:0;right:0;background:#b03030;color:#fff;font:600 11px/1.6 Inter,system-ui,sans-serif;padding:3px 8px;z-index:99999;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.2)}' +
+        '</style></head><body>' +
+        nav(state.active) + '<main id="pvMain"></main>' + footer() +
+        '<script>document.documentElement.classList.add("js-reveal");<\/script>' +
+        '<script src="/assets/js/main.js"><\/script>' +
+        '<script>(function(){document.addEventListener("click",function(e){var t=e.target;if(t&&t.closest){var a=t.closest("a");if(a&&a.getAttribute("href")){e.preventDefault();}}},true);})();<\/script>' +
+        '</body></html>';
+    }
+
+    function renderPreview() {
+      var frame = document.getElementById('preview');
+      frameReady = false;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc) {
+        // iframe 文档还没准备好，稍后再试
+        setTimeout(renderPreview, 50);
+        return;
+      }
+      // 用 document.write 直接写入完整 HTML，比 srcdoc 更可靠
+      doc.open();
+      doc.write(buildShell());
+      doc.close();
+      frameReady = true;
+      setTimeout(function () {
+        updatePreview();
+        scrollToBlock(state.selected);
+      }, 80);
+    }
+
+    var previewTimer = null;
+    function schedulePreview() {
+      if (previewTimer) clearTimeout(previewTimer);
+      previewTimer = setTimeout(renderPreview, 250);
+    }
+
+    function updatePreview() {
+      var frame = document.getElementById('preview');
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc || !doc.getElementById('pvMain')) return;
+      var main = doc.getElementById('pvMain');
+      var y = doc.defaultView ? doc.defaultView.scrollY : 0;
+
+      if (!state.sections.length) {
+        main.innerHTML = '<div style="padding:60px 20px;text-align:center;color:#97a0ad;font-size:14px;">该页面暂无内容区块<br>点击左上角 ＋ 新增</div>';
+        return;
+      }
+
+      main.innerHTML = state.sections.map(function (s) { return absPath(s.html || ''); }).join('\n');
+      var kids = main.children;
+      for (var i = 0; i < kids.length; i++) {
+        var rs = kids[i].querySelectorAll ? kids[i].querySelectorAll('.reveal') : [];
+        for (var j = 0; j < rs.length; j++) rs[j].classList.add('visible');
+        if (i === state.selected) kids[i].classList.add('pv-sel');
+        kids[i].setAttribute('data-pv-idx', i);
+        kids[i].style.cursor = 'pointer';
+        kids[i].addEventListener('click', blockClickHandler(i), true);
+      }
+      if (doc.defaultView) doc.defaultView.scrollTo(0, y);
+    }
+
+    function blockClickHandler(idx) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        selectBlock(idx);
+        scrollToBlock(idx);
+      };
+    }
+
+    function highlightSelected() {
+      var frame = document.getElementById('preview');
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc) return;
+      var main = doc.getElementById('pvMain');
+      if (!main) return;
+      var kids = main.children;
+      for (var i = 0; i < kids.length; i++) kids[i].classList.remove('pv-sel');
+      if (kids[state.selected]) kids[state.selected].classList.add('pv-sel');
+    }
+
+    function scrollToBlock(i) {
+      var frame = document.getElementById('preview');
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc) return;
+      var main = doc.getElementById('pvMain');
+      if (!main || !main.children[i]) return;
+      main.children[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function selectBlock(i) {
+      state.selected = i;
+      renderBlockList();
+      renderRight();
+      if (frameReady) { highlightSelected(); scrollToBlock(i); }
+    }
+
+    function scheduleRender() {
+      if (renderTimer) clearTimeout(renderTimer);
+      renderTimer = setTimeout(function () { if (frameReady) updatePreview(); }, 250);
+    }
+
+    function markDirty() {
+      if (!state.dirty) {
+        state.dirty = true;
+        document.getElementById('saveState').textContent = '有未保存修改';
+        document.getElementById('saveState').style.color = '#f0b429';
+      }
+    }
+
+    // ===== 左栏区块树 =====
+    function renderBlockList() {
+      var list = document.getElementById('blockList');
+      list.innerHTML = '';
+      if (state.isSettings) {
+        list.innerHTML = '<div class="empty">站点设置模式下无区块列表。<br>右侧直接修改品牌、导航、联系方式等全站内容。</div>';
+        return;
+      }
+      if (!state.sections.length) {
+        list.innerHTML = '<div class="empty">暂无区块，点击右上角 ＋ 新增。</div>';
+        return;
+      }
+      state.sections.forEach(function (s, i) {
+        var div = document.createElement('div');
+        div.className = 'block-item' + (i === state.selected ? ' selected' : '');
+        div.innerHTML =
+          '<span class="idx">' + (i + 1) + '</span>' +
+          '<span class="name">' + (esc(s.label) || '（未命名区块）') + '</span>' +
+          '<span class="ops">' +
+            '<button data-act="up" title="上移">↑</button>' +
+            '<button data-act="down" title="下移">↓</button>' +
+            '<button data-act="del" title="删除">✕</button>' +
+          '</span>';
+        div.addEventListener('click', function (e) {
+          var act = e.target.getAttribute('data-act');
+          if (act) {
+            e.stopPropagation();
+            if (act === 'up' && i > 0) { swap(i, i - 1); }
+            else if (act === 'down' && i < state.sections.length - 1) { swap(i, i + 1); }
+            else if (act === 'del') { state.sections.splice(i, 1); if (state.selected >= state.sections.length) state.selected = Math.max(0, state.sections.length - 1); afterStructureChange(); }
+            return;
+          }
+          selectBlock(i);
+        });
+        list.appendChild(div);
+      });
+    }
+
+    function swap(a, b) {
+      var t = state.sections[a]; state.sections[a] = state.sections[b]; state.sections[b] = t;
+      state.selected = b;
+      afterStructureChange();
+      setTimeout(function () { scrollToBlock(b); }, 60);
+    }
+
+    function afterStructureChange() {
+      markDirty();
+      renderBlockList();
+      renderRight();
+      scheduleRender();
+    }
+
+    // ===== 字段编辑器（通用：遍历整个区块，提取所有可改元素）=====
+    function getSectionDom(html) {
+      var div = document.createElement('div');
+      div.innerHTML = html;
+      return div;
+    }
+
+    // 判断元素是否有"直接文本"（排除来自子孙元素的文本）
+    function directText(el) {
+      for (var i = 0; i < el.childNodes.length; i++) {
+        var n = el.childNodes[i];
+        if (n.nodeType === 3 && n.nodeValue && n.nodeValue.trim()) return n.nodeValue.trim();
+      }
+      return '';
+    }
+
+    function buildFieldEditors(dom) {
+      var editors = [];
+      var cImg = 0, cLink = 0, cText = 0;
+      function push(type, label, value, set, kind) { editors.push({ type: type, label: label, value: value, set: set, kind: kind || type }); }
+
+      var els = dom.querySelectorAll('*');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.tagName === 'IMG') {
+          cImg++;
+          (function (e) {
+            push('image', '图片 ' + cImg, { src: e.getAttribute('src') || '', alt: e.getAttribute('alt') || '' }, function (v) {
+              e.setAttribute('src', v.src); e.setAttribute('alt', v.alt || '');
+            }, 'img');
+          })(el);
+        } else if (el.tagName === 'A') {
+          cLink++;
+          var hint = el.textContent.trim() ? '：' + el.textContent.trim().slice(0, 14) : '';
+          (function (e, h) {
+            push('link', '链接 ' + cLink + h, { text: e.innerHTML, href: e.getAttribute('href') || '' }, function (v) {
+              e.innerHTML = v.text; if (v.href != null) e.setAttribute('href', v.href);
+            }, 'link');
+          })(el, hint);
+        } else {
+          // 内联 background-image 也作为可替换图片（如 Hero 大图、卡片背景）
+          var styleStr = el.getAttribute('style') || '';
+          var bgm = styleStr.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i) ||
+                    styleStr.match(/background:\s*[^;]*url\(['"]?([^'")]+)['"]?\)/i);
+          if (bgm) {
+            cImg++;
+            (function (e, src) {
+              push('image', '背景图 ' + cImg, { src: src, alt: '' }, function (v) {
+                e.style.backgroundImage = "url('" + (v.src || '') + "')";
+              }, 'bg');
+            })(el, bgm[1]);
+            continue;
+          }
+          var dt = directText(el);
+          if (!dt) continue;
+          cText++;
+          var tl = el.tagName.toLowerCase();
+          if (el.className) tl += '.' + String(el.className).trim().split(/\s+/)[0];
+          (function (e) {
+            push('text', '文本 ' + cText + '（' + tl + '）', e.innerHTML, function (v) { e.innerHTML = v; });
+          })(el);
+        }
+      }
+      return editors;
+    }
+
+    // ===== 右栏属性 =====
+    function renderRight() {
+      var body = document.getElementById('rightBody');
+      if (state.isSettings) { renderSettingsRight(body); return; }
+      var pageHtml =
+        '<div class="grp"><div class="grp-title">页面设置</div>' +
+          '<div class="field"><label>页面标题（浏览器标签）</label><input id="fTitle" value="' + esc(state.title) + '"></div>' +
+          '<div class="field"><label>页面描述（SEO）</label><textarea id="fDesc" rows="3">' + esc(state.description) + '</textarea></div>' +
+        '</div>';
+
+      var s = state.sections[state.selected];
+      var blockHtml = '';
+      if (s) {
+        var dom = getSectionDom(s.html);
+        var editors = buildFieldEditors(dom);
+        var mode = state.rightMode || 'fields';
+
+        var fieldsHtml = '';
+        if (mode === 'fields') {
+          if (!editors.length) {
+            fieldsHtml = '<div class="hint">未识别到可快速编辑的字段，请切换到「代码编辑」。</div>';
+          } else {
+            for (var idx = 0; idx < editors.length; idx++) {
+              var ed = editors[idx];
+              if (ed.type === 'text') {
+                fieldsHtml += '<div class="field"><label>' + esc(ed.label) + '</label><textarea class="fe" data-idx="' + idx + '" rows="3">' + esc(ed.value) + '</textarea></div>';
+              } else if (ed.type === 'link') {
+                fieldsHtml += '<div class="field"><label>' + esc(ed.label) + ' 文字</label><textarea class="fe" data-idx="' + idx + '" data-sub="text" rows="2">' + esc(ed.value.text) + '</textarea></div>' +
+                  '<div class="field"><label>' + esc(ed.label) + ' 链接</label><input class="fe" data-idx="' + idx + '" data-sub="href" value="' + esc(ed.value.href) + '"></div>';
+              } else if (ed.type === 'image') {
+                var thumbSrc = imgAbs(ed.value.src);
+                var showAlt = ed.kind === 'img';
+                fieldsHtml += '<div class="field"><label>' + esc(ed.label) + ' 预览</label>' +
+                  '<div class="img-thumb' + (thumbSrc ? '' : ' empty') + '">' + (thumbSrc ? '<img src="' + esc(thumbSrc) + '" alt="" onerror="this.parentNode.classList.add(\'empty\');this.remove();">' : '') + '</div>' +
+                  '<div class="upload-row"><button type="button" class="btn-up" data-idx="' + idx + '">选择本地图片…</button>' +
+                  '<input type="file" accept="image/*" class="img-file" data-idx="' + idx + '" style="display:none"></div></div>' +
+                  '<div class="field"><label>' + esc(ed.label) + ' 地址（也可手动粘贴 URL）</label><input class="fe" data-idx="' + idx + '" data-sub="src" value="' + esc(ed.value.src) + '"></div>' +
+                  (showAlt ? '<div class="field"><label>' + esc(ed.label) + ' 替代文本</label><input class="fe" data-idx="' + idx + '" data-sub="alt" value="' + esc(ed.value.alt) + '"></div>' : '');
+              }
+            }
+          }
+        }
+
+        blockHtml =
+          '<div class="divider"></div>' +
+          '<div class="grp"><div class="grp-title" style="display:flex;justify-content:space-between;align-items:center;">当前区块 <span class="tag">#' + (state.selected + 1) + '</span></div>' +
+          '<div class="field" style="margin-bottom:14px;"><div class="seg" id="modeSwitch">' +
+            '<button data-mode="fields"' + (mode === 'fields' ? ' class="active"' : '') + '>字段编辑</button>' +
+            '<button data-mode="code"' + (mode === 'code' ? ' class="active"' : '') + '>代码编辑</button>' +
+          '</div></div>' +
+          '<div class="field"><label>区块名称</label><input id="fLabel" value="' + esc(s.label) + '"></div>' +
+          (mode === 'fields' ? fieldsHtml :
+            '<div class="field"><label>区块 HTML 代码</label><textarea id="fHtml" class="code" spellcheck="false">' + esc(s.html) + '</textarea>' +
+            '<div class="hint">直接编辑 HTML 即可，预览会即时刷新。图片建议用 <code>/assets/img/...</code> 绝对路径。</div></div>') +
+          '</div>';
+      } else {
+        blockHtml = '<div class="divider"></div><div class="grp"><div class="grp-title">当前区块</div><div class="hint">尚无区块，点击左上角 ＋ 新增。</div></div>';
+      }
+
+      body.innerHTML = pageHtml + blockHtml;
+
+      var t = document.getElementById('fTitle');
+      if (t) t.addEventListener('input', function () { state.title = t.value; markDirty(); scheduleRender(); });
+      var d = document.getElementById('fDesc');
+      if (d) d.addEventListener('input', function () { state.description = d.value; markDirty(); scheduleRender(); });
+      var l = document.getElementById('fLabel');
+      if (l) l.addEventListener('input', function () { s.label = l.value; markDirty(); renderBlockList(); });
+
+      var modeSwitch = document.getElementById('modeSwitch');
+      if (modeSwitch) {
+        modeSwitch.addEventListener('click', function (e) {
+          var b = e.target.closest('button'); if (!b) return;
+          state.rightMode = b.getAttribute('data-mode');
+          renderRight();
+        });
+      }
+
+      if (s && mode === 'fields') {
+        [].forEach.call(body.querySelectorAll('.fe'), function (input) {
+          input.addEventListener('input', function () {
+            var idx = parseInt(input.getAttribute('data-idx'), 10);
+            var sub = input.getAttribute('data-sub');
+            var ed = editors[idx];
+            if (ed.type === 'image' || ed.type === 'link') {
+              var v = Object.assign({}, ed.value);
+              v[sub] = input.value;
+              ed.set(v);
+            } else {
+              ed.set(input.value);
+            }
+            s.html = dom.innerHTML;
+            markDirty(); scheduleRender();
+          });
+        });
+
+        // 图片：选择本地文件 -> 上传 -> 替换为新地址
+        [].forEach.call(body.querySelectorAll('.img-file'), function (input) {
+          input.addEventListener('change', function () {
+            var idx = parseInt(input.getAttribute('data-idx'), 10);
+            var ed = editors[idx];
+            var file = input.files && input.files[0];
+            if (!file) return;
+            toast('图片上传中…', '');
+            uploadImage(file).then(function (j) {
+              var v = Object.assign({}, ed.value); v.src = j.url;
+              ed.set(v);
+              s.html = dom.innerHTML;
+              markDirty();
+              renderRight();      // 重建右栏，刷新缩略图与地址框
+              scheduleRender();    // 刷新中间预览
+              toast('图片已上传' + (j.published ? '，已发布到线上' : '（本地已保存，保存后发布）'), 'ok');
+            }).catch(function (e) { toast('图片上传失败：' + (e.message || e), 'err'); });
+          });
+        });
+        [].forEach.call(body.querySelectorAll('.btn-up'), function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = btn.getAttribute('data-idx');
+            var f = body.querySelector('.img-file[data-idx="' + idx + '"]');
+            if (f) f.click();
+          });
+        });
+      }
+
+      var h = document.getElementById('fHtml');
+      if (h) h.addEventListener('input', function () { s.html = h.value; markDirty(); scheduleRender(); });
+    }
+
+    // ===== 站点设置面板 =====
+    function renderSettingsRight(body) {
+      var st = state.settings || {};
+      function f(id, label, val, rows) {
+        return '<div class="field"><label>' + esc(label) + '</label>' +
+          (rows ? '<textarea id="' + id + '" rows="' + rows + '">' + esc(val) + '</textarea>'
+                : '<input id="' + id + '" value="' + esc(val) + '">') + '</div>';
+      }
+      var navHtml = '';
+      var nav = st.nav || [];
+      for (var i = 0; i < nav.length; i++) {
+        navHtml += '<div class="field"><label>导航 ' + (i + 1) + ' 文字</label><input class="sn" data-nav="' + i + '" data-sub="label" value="' + esc(nav[i].label) + '"></div>' +
+          '<div class="field"><label>导航 ' + (i + 1) + ' 链接</label><input class="sn" data-nav="' + i + '" data-sub="href" value="' + esc(nav[i].href) + '"></div>';
+      }
+      body.innerHTML =
+        '<div class="grp"><div class="grp-title">站点设置（全站通用）</div>' +
+          f('sBrand', '品牌名称', st.brandName) +
+          f('sBrandSub', '品牌副标题', st.brandSub) +
+          '<div class="field"><label>站点 Logo 预览</label>' +
+            '<div class="img-thumb' + (st.logo ? '' : ' empty') + '">' + (st.logo ? '<img src="' + esc(imgAbs(st.logo)) + '" alt="" onerror="this.parentNode.classList.add(\'empty\');this.remove();">' : '') + '</div>' +
+            '<div class="upload-row"><button type="button" class="btn-up" id="logoUp">选择本地图片…</button>' +
+            '<input type="file" accept="image/*" id="logoFile" style="display:none"></div></div>' +
+          '<div class="field"><label>站点 Logo 地址</label><input id="sLogo" value="' + esc(st.logo) + '"></div>' +
+          '<div class="divider"></div><div class="grp-title">主导航菜单</div>' + navHtml +
+          '<div class="divider"></div>' +
+          f('sTel', '电话', st.tel) +
+          f('sTelHref', '电话链接(tel:)', st.telHref) +
+          f('sEmail', '邮箱', st.email) +
+          f('sAddress', '地址', st.address) +
+          '<div class="divider"></div>' +
+          f('sFooterText', '页脚介绍', st.footerText, 3) +
+          f('sLicense', '执照号', st.license) +
+          f('sFooterZh', '页脚中文标语', st.footerZh) +
+        '</div>';
+
+      function bind(id, key) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', function () {
+          state.settings[key] = el.value; SITE[key] = el.value;
+          markDirty(); schedulePreview();
+        });
+      }
+      bind('sBrand', 'brandName'); bind('sBrandSub', 'brandSub'); bind('sLogo', 'logo');
+      bind('sTel', 'tel'); bind('sTelHref', 'telHref'); bind('sEmail', 'email'); bind('sAddress', 'address');
+      bind('sFooterText', 'footerText'); bind('sLicense', 'license'); bind('sFooterZh', 'footerZh');
+
+      [].forEach.call(body.querySelectorAll('.sn'), function (input) {
+        input.addEventListener('input', function () {
+          var i = parseInt(input.getAttribute('data-nav'), 10);
+          var sub = input.getAttribute('data-sub');
+          if (!state.settings.nav) state.settings.nav = [];
+          if (!state.settings.nav[i]) state.settings.nav[i] = {};
+          state.settings.nav[i][sub] = input.value;
+          if (!SITE.nav) SITE.nav = [];
+          if (!SITE.nav[i]) SITE.nav[i] = {};
+          SITE.nav[i][sub] = input.value;
+          markDirty(); schedulePreview();
+        });
+      });
+
+      var logoUp = document.getElementById('logoUp');
+      var logoFile = document.getElementById('logoFile');
+      if (logoUp && logoFile) {
+        logoUp.addEventListener('click', function () { logoFile.click(); });
+        logoFile.addEventListener('change', function () {
+          var file = logoFile.files && logoFile.files[0];
+          if (!file) return;
+          toast('Logo 上传中…', '');
+          uploadImage(file).then(function (j) {
+            state.settings.logo = j.url; SITE.logo = j.url;
+            markDirty();
+            renderSettingsRight(body); schedulePreview();
+            toast('Logo 已上传' + (j.published ? '，已发布到线上' : '（本地已保存，保存后发布）'), 'ok');
+          }).catch(function (e) { toast('Logo 上传失败：' + (e.message || e), 'err'); });
+        });
+      }
+    }
+
+    // ===== 数据加载/保存 =====
+    function loadPage(name) {
+      if (name === '__settings__') {
+        state.isSettings = true; state.name = '__settings__'; state.label = '站点设置';
+        fetch('/api/settings').then(function (r) { return r.json(); }).then(function (st) {
+          if (st.error) { toast(st.error, 'err'); return; }
+          state.settings = st;
+          for (var k in st) { if (st.hasOwnProperty(k)) SITE[k] = st[k]; }
+          document.getElementById('saveState').textContent = '未修改';
+          document.getElementById('saveState').style.color = '#9aa0aa';
+          document.getElementById('previewLabel').textContent = '实时预览 · 站点设置';
+          document.getElementById('pageSelect').value = '__settings__';
+          renderBlockList(); renderRight(); renderPreview();
+        }).catch(function (e) { toast('加载失败：' + e, 'err'); });
+        return;
+      }
+      state.isSettings = false;
+      fetch('/api/page/' + name).then(function (r) { return r.json(); }).then(function (p) {
+        if (p.error) { toast(p.error, 'err'); return; }
+        state.name = p.name; state.label = p.label; state.active = p.active;
+        state.title = p.title; state.description = p.description;
+        state.sections = p.sections || []; state.selected = 0; state.dirty = false;
+        document.getElementById('saveState').textContent = '未修改';
+        document.getElementById('saveState').style.color = '#9aa0aa';
+        document.getElementById('previewLabel').textContent = '实时预览 · ' + p.label;
+        document.getElementById('pageSelect').value = name;
+        renderBlockList(); renderRight(); renderPreview();
+        // 保险：如果 iframe 第一次没起来，1 秒后重试一次
+        setTimeout(function () {
+          if (!frameReady) { console.warn('preview retry'); renderPreview(); }
+          else { updatePreview(); scrollToBlock(state.selected); }
+        }, 1000);
+      }).catch(function (e) { toast('加载失败：' + e, 'err'); });
+    }
+
+    function savePage() {
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      if (state.isSettings) {
+        fetch('/api/settings', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state.settings)
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          btn.disabled = false;
+          if (j.ok) { state.dirty = false; document.getElementById('saveState').textContent = '已保存'; document.getElementById('saveState').style.color = '#9aa0aa'; toast('站点设置已保存并发布', 'ok'); }
+          else { toast('保存失败：' + (j.error || ''), 'err'); }
+        }).catch(function (e) { btn.disabled = false; toast('保存失败：' + e, 'err'); });
+        return;
+      }
+      fetch('/api/page/' + state.name, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: state.title, description: state.description, sections: state.sections })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        btn.disabled = false;
+        if (j.ok) { state.dirty = false; document.getElementById('saveState').textContent = '已保存'; document.getElementById('saveState').style.color = '#9aa0aa'; toast('已保存到源文件 src/' + state.name + '.njk', 'ok'); }
+        else { toast('保存失败：' + (j.error || ''), 'err'); }
+      }).catch(function (e) { btn.disabled = false; toast('保存失败：' + e, 'err'); });
+    }
+
+    // ===== 工具 =====
+    function toast(msg, type) {
+      var el = document.getElementById('toast');
+      el.textContent = msg; el.className = 'toast show' + (type ? ' ' + type : '');
+      setTimeout(function () { el.className = 'toast'; }, type === 'err' ? 5200 : 2600);
+    }
+
+    // ===== 事件绑定 =====
+    function init() {
+      // 先加载站点设置，让页头/页脚预览反映真实数据
+      fetch('/api/settings').then(function (r) { return r.json(); }).then(function (st) {
+        if (!st.error) { for (var k in st) { if (st.hasOwnProperty(k)) SITE[k] = st[k]; } if (frameReady) renderPreview(); }
+      }).catch(function () {});
+
+      fetch('/api/pages').then(function (r) { return r.json(); }).then(function (d) {
+        var sel = document.getElementById('pageSelect');
+        var so = document.createElement('option'); so.value = '__settings__'; so.textContent = '⚙ 站点设置 Settings'; sel.appendChild(so);
+        d.pages.forEach(function (p) {
+          var o = document.createElement('option'); o.value = p.name; o.textContent = p.label; sel.appendChild(o);
+        });
+        sel.addEventListener('change', function () { loadPage(sel.value); });
+        if (d.pages.length) loadPage(d.pages[0].name);
+      });
+
+      document.getElementById('devices').addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        var dev = b.getAttribute('data-dev');
+        [].forEach.call(this.children, function (c) { c.classList.remove('active'); });
+        b.classList.add('active');
+        document.getElementById('device').className = 'device ' + dev;
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', savePage);
+
+      document.getElementById('addBlock').addEventListener('click', function () {
+        if (state.isSettings) { toast('站点设置模式不能新增区块，请先选择某个页面', 'err'); return; }
+        state.sections.push({ label: '新区块', html: '<section class="section"><div class="container"><h2 class="display-h2">新区块标题</h2><p>在此输入内容。</p></div></section>' });
+        state.selected = state.sections.length - 1;
+        afterStructureChange();
+      });
+
+      document.getElementById('rebuildBtn').addEventListener('click', function () {
+        var btn = this; btn.disabled = true; toast('正在重新构建 _site …');
+        fetch('/api/rebuild', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
+          btn.disabled = false;
+          if (j.ok) toast('构建完成，可用 Decap / git 发布', 'ok'); else toast('构建失败：' + (j.error || ''), 'err');
+        }).catch(function (e) { btn.disabled = false; toast('构建失败：' + e, 'err'); });
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
