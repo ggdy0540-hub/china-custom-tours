@@ -3,5 +3,9 @@
 Thumbs.db
 *.log
 
-# dependency dirs (none currently, kept for safety)
+# dependencies
 node_modules/
+
+# build output
+_site/
+.cache/

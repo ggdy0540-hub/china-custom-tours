@@ -1,5 +1,6 @@
-# Decap CMS configuration — Jing · Meet China
-# Auth via Netlify Identity + Git Gateway (no GitHub OAuth App needed).
+# Decap CMS — Jing · Meet China
+# 后台地址：https://dynamic-bombolone-713dfe.netlify.app/admin/
+# 内容改动会提交到 GitHub 仓库 src/ 目录，GitHub Actions 自动重新构建并部署。
 
 backend:
   name: git-gateway
@@ -7,101 +8,318 @@ backend:
   branch: main
   site_domain: dynamic-bombolone-713dfe.netlify.app
 
-# Where uploaded images are stored / referenced
-media_folder: "assets/img"
+media_folder: "src/assets/img"
 public_folder: "/assets/img"
 
-# Editor locale
 locale: en
-
 publish_mode: simple
 
 collections:
-  - name: "pages"
-    label: "网站页面"
+  - name: "settings"
+    label: "全站设置 Site Settings"
     files:
-      - name: "home"
-        label: "首页 Home"
-        file: "index.html"
+      - name: "site"
+        label: "联系信息 / 页脚"
+        file: "src/_data/site.json"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "品牌名称", name: brandName, widget: string }
+          - { label: "品牌副标题", name: brandSub, widget: string }
+          - { label: "电话（显示）", name: tel, widget: string }
+          - { label: "电话（链接，去掉空格）", name: telHref, widget: string }
+          - { label: "邮箱", name: email, widget: string }
+          - { label: "地址", name: address, widget: string }
+          - { label: "页脚简介", name: footerText, widget: text }
+          - { label: "执照号", name: license, widget: string }
+          - { label: "页脚中文标语", name: footerZh, widget: string }
+  - name: "pages"
+    label: "网站页面 Pages"
+    files:
+      - name: "index"
+        label: "首页 Home"
+        file: "src/index.njk"
+        fields:
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "about"
         label: "关于我们 About"
-        file: "about.html"
+        file: "src/about.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
-      - name: "contact"
-        label: "联系我们 Contact"
-        file: "contact.html"
-        fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "tours"
         label: "线路总览 Tours"
-        file: "tours.html"
+        file: "src/tours.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "tour-cultural"
-        label: "文化线路 Cultural Tour"
-        file: "tour-cultural.html"
+        label: "文化线路 Cultural"
+        file: "src/tour-cultural.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "tour-culinary"
-        label: "美食线路 Culinary Tour"
-        file: "tour-culinary.html"
+        label: "美食线路 Culinary"
+        file: "src/tour-culinary.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "tour-family"
-        label: "亲子线路 Family Tour"
-        file: "tour-family.html"
+        label: "亲子线路 Family"
+        file: "src/tour-family.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "tour-nature"
-        label: "自然线路 Nature Tour"
-        file: "tour-nature.html"
+        label: "自然线路 Nature"
+        file: "src/tour-nature.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-shanghai"
-        label: "目的地·上海 Shanghai"
-        file: "dest-shanghai.html"
+        label: "目的地 · 上海"
+        file: "src/dest-shanghai.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-beijing"
-        label: "目的地·北京 Beijing"
-        file: "dest-beijing.html"
+        label: "目的地 · 北京"
+        file: "src/dest-beijing.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-xian"
-        label: "目的地·西安 Xi'an"
-        file: "dest-xian.html"
+        label: "目的地 · 西安"
+        file: "src/dest-xian.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-chengdu"
-        label: "目的地·成都 Chengdu"
-        file: "dest-chengdu.html"
+        label: "目的地 · 成都"
+        file: "src/dest-chengdu.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-guilin"
-        label: "目的地·桂林 Guilin"
-        file: "dest-guilin.html"
+        label: "目的地 · 桂林"
+        file: "src/dest-guilin.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "dest-zhangjiajie"
-        label: "目的地·张家界 Zhangjiajie"
-        file: "dest-zhangjiajie.html"
+        label: "目的地 · 张家界"
+        file: "src/dest-zhangjiajie.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
+      - name: "contact"
+        label: "联系我们 Contact"
+        file: "src/contact.njk"
+        fields:
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "faq"
         label: "常见问题 FAQ"
-        file: "faq.html"
+        file: "src/faq.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "privacy"
         label: "隐私政策 Privacy"
-        file: "privacy.html"
+        file: "src/privacy.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
       - name: "terms"
         label: "服务条款 Terms"
-        file: "terms.html"
+        file: "src/terms.njk"
         fields:
-          - { name: html, label: "页面内容 (HTML)", widget: code, default_language: html, required: false }
+          - { label: "页面标题（浏览器标签）", name: title, widget: string }
+          - { label: "页面描述（SEO）", name: description, widget: text }
+          - label: "页面区块"
+            name: sections
+            widget: list
+            fields:
+              - { label: "区块名称", name: label, widget: string }
+              - label: "区块内容"
+                name: html
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true

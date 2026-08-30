@@ -1,0 +1,63 @@
+---
+layout: layouts/base.njk
+permalink: /terms.html
+title: "Terms of Service — Jing · Meet China"
+description: "Terms and conditions for booking travel services with Jing · Meet China."
+active: "terms"
+sections:
+  - label: "Terms of Service"
+    html: |
+      <section class="page-hero" style="background-image:url('assets/img/dest-xian.png');"><div class="container"><span class="breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; Terms of Service</span><h1>Terms of Service</h1><p>Last updated: August 2026</p></div></section>
+  - label: "1. Agreement"
+    html: |
+      <section class="section"><div class="container" style="max-width:820px;">
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">1. Agreement</h2>
+      <p style="margin-bottom:32px;">By booking or participating in a trip with Jing · Meet China (hereinafter "CCT," "we," or "us"), you agree to these Terms of Service. These terms constitute a legally binding agreement between you ("Traveler") and CCT, a fully licensed Chinese travel agency (License No. L-SH-CJ00088), registered in Shanghai, China.</p>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">2. Booking &amp; Payment</h2>
+      <ul style="margin-bottom:32px;padding-left:24px;list-style:disc;">
+        <li style="margin-bottom:8px;">A booking is confirmed upon receipt of a 30% deposit of the total trip price.</li>
+        <li style="margin-bottom:8px;">The remaining balance is due 30 days before the trip start date.</li>
+        <li style="margin-bottom:8px;">Bookings made within 30 days of departure require full payment at confirmation.</li>
+        <li style="margin-bottom:8px;">We accept bank transfer, major credit cards (Visa, Mastercard), and PayPal.</li>
+      </ul>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">3. Cancellation &amp; Refunds</h2>
+      <ul style="margin-bottom:32px;padding-left:24px;list-style:disc;">
+        <li style="margin-bottom:8px;">45+ days before departure: full refund minus a $150 administration fee.</li>
+        <li style="margin-bottom:8px;">30–44 days before departure: 70% of total price refunded.</li>
+        <li style="margin-bottom:8px;">15–29 days before departure: 50% of total price refunded.</li>
+        <li style="margin-bottom:8px;">Less than 15 days before departure: 20% of total price refunded.</li>
+        <li style="margin-bottom:8px;">No-show: no refund.</li>
+        <li style="margin-bottom:8px;">All cancellations must be submitted in writing via email.</li>
+      </ul>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">4. Itinerary Changes</h2>
+      <p style="margin-bottom:32px;">We reserve the right to modify itineraries due to unforeseen circumstances (weather, safety, government regulations, etc.). We will offer comparable alternatives whenever possible. Travelers may request changes before final payment at no additional design fee; changes after final payment may incur supplemental costs.</p>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">5. Traveler Responsibilities</h2>
+      <ul style="margin-bottom:32px;padding-left:24px;list-style:disc;">
+        <li style="margin-bottom:8px;">Obtain all necessary visas, travel documents, and vaccinations.</li>
+        <li style="margin-bottom:8px;">Purchase comprehensive travel insurance (strongly recommended; we can assist).</li>
+        <li style="margin-bottom:8px;">Disclose medical conditions, mobility limitations, or dietary needs before booking.</li>
+        <li style="margin-bottom:8px;">Follow local laws, customs, and guide instructions during the trip.</li>
+      </ul>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">6. Liability</h2>
+      <p style="margin-bottom:32px;">CCT acts as an intermediary between travelers and service providers (hotels, transport, attractions). While we carefully vet all partners, we cannot be held liable for the negligence, actions, or defaults of third-party providers. Our total liability is limited to the amount paid for the trip. We strongly recommend travel insurance covering medical emergencies, trip cancellation, and baggage loss.</p>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">7. Force Majeure</h2>
+      <p style="margin-bottom:32px;">Neither party shall be liable for failure to perform obligations due to events beyond reasonable control, including but not limited to natural disasters, pandemics, war, government actions, strikes, or transportation disruptions. In such cases, we will work with you to reschedule or offer the best possible alternative.</p>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">8. Dispute Resolution</h2>
+      <p style="margin-bottom:32px;">Any disputes shall first be resolved through good-faith negotiation. If unresolved, disputes will be submitted to the Shanghai International Arbitration Centre (SHIAC) under its arbitration rules. These terms are governed by the laws of the People's Republic of China.</p>
+      
+      <h2 class="display-h2" style="font-size:1.6rem;margin-bottom:20px;">9. Contact</h2>
+      <p>For questions about these terms: <a href="mailto:zjonny338@gmail.com">zjonny338@gmail.com</a> or Jing · Meet China, 上海市静安区北京西路大厦.</p>
+      </div></section>
+---
+{% for s in sections %}
+{{ s.html | safe }}
+
+{% endfor %}

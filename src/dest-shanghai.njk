@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+permalink: /dest-shanghai.html
+title: "Discover Shanghai — Jing · Meet China"
+description: "Shanghai is China's most cosmopolitan city — a place where 1920s art-deco mansions share a skyline with the world's second-tallest building, where Fre"
+active: "dest-shanghai"
+sections:
+  - label: "Shanghai 上海"
+    html: |
+      <section class="page-hero" style="background-image:url('assets/img/dest-shanghai.png');"><div class="container"><span class="breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; <a href="tours.html">Destinations</a> &nbsp;/&nbsp; Shanghai</span><h1>Shanghai <span class="zh" style="font-family:var(--font-zh);font-size:0.65em;color:var(--gold);">上海</span></h1><p>Shanghai is China's most cosmopolitan city — a place where 1920s art-deco mansions share a skyline with the world's seco…</p></div></section>
+  - label: "Why visit Shanghai?"
+    html: |
+      <section class="section"><div class="container"><div class="split"><div class="split-media reveal"><img src="assets/img/dest-shanghai.png" alt="Shanghai" /><div class="seal-stamp" aria-hidden="true">上<br/>&#28216;</div></div><div class="split-copy reveal reveal-d1"><span class="eyebrow">City & Style</span><h2 class="display-h2">Why visit Shanghai?</h2><p>Shanghai is China's most cosmopolitan city — a place where 1920s art-deco mansions share a skyline with the world's second-tallest building, where French bakeries sit beside hole-in-the-wall noodle shops, and where the pace of reinvention never slows. It's the perfect beginning or ending to any China journey.</p></div></div></div></section>
+  - label: "Iconic experiences in Shanghai"
+    html: |
+      <section class="section" style="background:var(--white);"><div class="container"><div class="section-head reveal"><span class="eyebrow centered">Must-See Sights</span><h2 class="display-h2">Iconic experiences in Shanghai</h2></div><div class="feature-grid" style="grid-template-columns:repeat(2,1fr);"><div class="card feature-card reveal"><div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>The Bund</h3><p>Shanghai's iconic waterfront. Walk at blue hour when the Pudong skyline lights up across the Huangpu River.</p></div><div class="card feature-card reveal"><div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>Yu Garden & Old Town</h3><p>A 400-year-old classical Chinese garden surrounded by teahouses, silk shops, and xiaolongbao restaurants.</p></div><div class="card feature-card reveal"><div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>French Concession</h3><p>Tree-lined streets, hidden bars, indie boutiques, and the city's best brunch spots.</p></div><div class="card feature-card reveal"><div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>Shanghai Tower</h3><p>The world's second-tallest building. Ride to the 118th floor for a 546-meter-high panoramic view.</p></div></div></div></section>
+  - label: "Recommended experiences"
+    html: |
+      <section class="section"><div class="container"><div class="section-head reveal"><span class="eyebrow centered">What You'll Do</span><h2 class="display-h2">Recommended experiences</h2></div><div class="card" style="max-width:720px;margin:0 auto;padding:36px 40px;"><ul class="tour-highlights" style="grid-template-columns:1fr 1fr;gap:12px 28px;"><li>Bund waterfront walk at blue hour</li><li>Xiaolongbao soup dumpling trail</li><li>French Concession cycling and hidden-bar crawl</li><li>Shanghai Museum jade and calligraphy galleries</li><li>Maglev train ride at 430 km/h</li><li>Evening river cruise past the illuminated skyline</li></ul></div></div></section>
+  - label: "Block"
+    html: |
+      <section class="section" style="background:var(--paper-deep);"><div class="container"><div class="stat-strip" style="border:none;padding:0;"><div class="stat-grid" style="grid-template-columns:repeat(3,1fr);"><div class="reveal"><div class="stat-num" style="font-size:1.1rem;font-family:var(--font-body);font-weight:700;">Best Season</div><div class="stat-label">March–May and October–November. Spring brings cherry blossoms; autumn is crisp and clear.</div></div><div class="reveal reveal-d1"><div class="stat-num" style="font-size:1.1rem;font-family:var(--font-body);font-weight:700;">Local Flavors</div><div class="stat-label">Xiaolongbao soup dumplings, shengjian bao pan-fried buns, braised pork belly, hairy crab (autumn only), and Shanghainese dim sum.</div></div><div class="reveal reveal-d2"><div class="stat-num" style="font-size:1.1rem;font-family:var(--font-body);font-weight:700;">Where to Stay</div><div class="stat-label">Heritage Bund hotels with river views, design boutiques in the French Concession, or Pudong towers above the clouds.</div></div></div></div></div></section>
+  - label: "Ready to explore Shanghai?"
+    html: |
+      <section class="cta-band"><div class="container cta-inner"><div><h2>Ready to explore Shanghai?</h2><p>Tell us your travel dates and interests — we'll design a private, tailor-made journey around Shanghai just for you.</p></div><a href="contact.html" class="btn btn-primary">Start Planning <span class="arr">&rarr;</span></a></div></section>
+---
+{% for s in sections %}
+{{ s.html | safe }}
+
+{% endfor %}
