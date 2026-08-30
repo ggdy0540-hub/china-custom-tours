@@ -5,8 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Content Manager — Jing · Meet China</title>
   <link rel="icon" href="../assets/img/brand-seal.svg" />
-  <script src="../assets/js/decap-cms.js"></script>
+  <style>
+    #boot-status {
+      font: 14px/1.7 system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      padding: 48px;
+      color: #333;
+      max-width: 900px;
+    }
+    #boot-status h2 { font-size: 18px; margin: 0 0 12px; color: #b03030; }
+    #boot-status pre {
+      background: #f6f6f6;
+      padding: 14px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #c0392b;
+      font-size: 12px;
+    }
+    #boot-status dl { margin: 12px 0; }
+    #boot-status dt { font-weight: 600; margin-top: 8px; }
+    #boot-status dd { margin: 2px 0 0; color: #555; }
+  </style>
 </head>
 <body>
+  <div id="boot-status">
+    <h2>正在加载内容后台…</h2>
+    <p>如果 15 秒后仍停留在此页面，下方会显示诊断信息。</p>
+  </div>
+
+  <script>
+    window.__bootErrors = [];
+    window.addEventListener('error', function (e) {
+      var msg = '[error] ' + (e.message || '(no message)');
+      if (e.filename) msg += '  @ ' + e.filename + ':' + e.lineno + ':' + e.colno;
+      window.__bootErrors.push(msg);
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      var r = e.reason;
+      window.__bootErrors.push('[promise] ' + (r && r.message ? r.message : String(r)));
+    });
+
+    function report(html) {
+      var el = document.getElementById('boot-status');
+      if (el) el.innerHTML = html;
+    }
+    function scriptFailed() {
+      report('<h2>脚本加载失败</h2><p>无法加载 <code>../assets/js/decap-cms.js</code></p>');
+    }
+
+    // Remove the status block as soon as Decap renders its root element.
+    var observer = new MutationObserver(function () {
+      if (document.getElementById('nc-root')) {
+        var el = document.getElementById('boot-status');
+        if (el) el.remove();
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: false });
+
+    setTimeout(function () {
+      var rendered = document.getElementById('nc-root');
+      if (rendered) return;
+      var out = '<h2>后台脚本未能渲染</h2>';
+      out += '<dl>';
+      out += '<dt>window.DecapCms</dt><dd>' + (typeof window.DecapCms) + '</dd>';
+      out += '<dt>window.CMS</dt><dd>' + (typeof window.CMS) + '</dd>';
+      out += '<dt>body 子元素数量</dt><dd>' + document.body.children.length + '</dd>';
+      out += '<dt>User-Agent</dt><dd>' + navigator.userAgent + '</dd>';
+      out += '</dl>';
+      out += '<p><strong>收集到的错误：</strong></p><pre>' +
+        (window.__bootErrors.join('\n') || '(没有捕获到 JS 错误)') + '</pre>';
+      out += '<p style="color:#777">请把以上信息发给技术人员。</p>';
+      report(out);
+    }, 15000);
+  </script>
+
+  <script src="../assets/js/decap-cms.js" onerror="scriptFailed()"></script>
 </body>
 </html>
