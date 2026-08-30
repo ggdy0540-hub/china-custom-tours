@@ -91,7 +91,7 @@ sections:
 
                   <div class="feature-icon">
 
-                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16"/><path d="M16 6v16"/></svg>
+                    <img src="assets/img/icon-bespoke.svg" alt="Bespoke Itineraries" />
 
                   </div>
 
@@ -105,7 +105,7 @@ sections:
 
                   <div class="feature-icon">
 
-                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <img src="assets/img/icon-guides.svg" alt="Expert Local Guides" />
 
                   </div>
 
@@ -119,7 +119,7 @@ sections:
 
                   <div class="feature-icon">
 
-                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 13l1.8-4.6A2 2 0 0 1 6.7 7h10.6a2 2 0 0 1 1.9 1.4L21 13"/><rect x="2" y="13" width="20" height="6" rx="2"/><circle cx="7" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/></svg>
+                    <img src="assets/img/icon-cars.svg" alt="Private Cars and Drivers" />
 
                   </div>
 
@@ -133,7 +133,7 @@ sections:
 
                   <div class="feature-icon">
 
-                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                    <img src="assets/img/icon-support.svg" alt="24/7 On-Trip Support" />
 
                   </div>
 
@@ -381,7 +381,7 @@ sections:
 
                   <div class="quote-meta">
 
-                    <div class="avatar" style="background: var(--cinnabar);">SW</div>
+                    <img class="avatar" src="assets/img/avatar-sw.svg" alt="Sarah &amp; James Whitfield" />
 
                     <div><strong>Sarah &amp; James Whitfield</strong><span>United Kingdom · Classic China Family Journey</span></div>
 
@@ -405,7 +405,7 @@ sections:
 
                   <div class="quote-meta">
 
-                    <div class="avatar" style="background: var(--jade);">MT</div>
+                    <img class="avatar" src="assets/img/avatar-mt.svg" alt="Michael Torres" />
 
                     <div><strong>Michael Torres</strong><span>United States · Ancient Capitals Discovery</span></div>
 
@@ -429,7 +429,7 @@ sections:
 
                   <div class="quote-meta">
 
-                    <div class="avatar" style="background: var(--gold-dark);">IM</div>
+                    <img class="avatar" src="assets/img/avatar-im.svg" alt="Isabelle Moreau" />
 
                     <div><strong>Isabelle Moreau</strong><span>France · Flavors of China Culinary Tour</span></div>
 
@@ -464,7 +464,7 @@ sections:
           </section>
 ---
 
-{% for s in sections %}
-{{ s.html | safe }}
-
-{% endfor %}
+{% for s in sections %}
+{{ s.html | safe }}
+
+{% endfor %}
