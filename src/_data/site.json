@@ -1,5 +1,5 @@
 {
-  "brandName": "Jing · Meet China",
+  "brandName": "TEST_BRAND_X",
   "brandSub": "Tailor-Made Travel",
   "tel": "+86 177 8218 9330",
   "telHref": "+8617782189330",
@@ -9,9 +9,21 @@
   "license": "License No. L-SH-CJ00088.",
   "footerZh": "中国定制游 · 用心每一段旅程",
   "nav": [
-    { "label": "Home", "href": "/index.html" },
-    { "label": "About Us", "href": "/about.html" },
-    { "label": "Tours & Services", "href": "/tours.html" },
-    { "label": "Contact", "href": "/contact.html" }
+    {
+      "label": "Home",
+      "href": "/index.html"
+    },
+    {
+      "label": "About Us",
+      "href": "/about.html"
+    },
+    {
+      "label": "Tours & Services",
+      "href": "/tours.html"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact.html"
+    }
   ]
 }
