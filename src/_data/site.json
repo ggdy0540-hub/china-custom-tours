@@ -7,5 +7,11 @@
   "address": "上海市静安区北京西路大厦",
   "footerText": "Private, tailor-made journeys across China for international travelers since 2012. Your journey, your way.",
   "license": "License No. L-SH-CJ00088.",
-  "footerZh": "中国定制游 · 用心每一段旅程"
+  "footerZh": "中国定制游 · 用心每一段旅程",
+  "nav": [
+    { "label": "Home", "href": "/index.html" },
+    { "label": "About Us", "href": "/about.html" },
+    { "label": "Tours & Services", "href": "/tours.html" },
+    { "label": "Contact", "href": "/contact.html" }
+  ]
 }
