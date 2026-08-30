@@ -1,11 +1,11 @@
 <header class="site-header">
   <div class="container nav-bar">
-    <a href="/index.html" class="brand" aria-label="Jing · Meet China — Home"><img src="/assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">Jing · Meet China</span><span class="brand-sub">Tailor-Made Travel</span></span></a>
+    <a href="/index.html" class="brand" aria-label="{{ site.brandName }} — Home"><img src="/assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">{{ site.brandName }}</span><span class="brand-sub">{{ site.brandSub }}</span></span></a>
     <nav class="nav-links" aria-label="Main navigation">
-      <a href="/index.html" {%- if active == "index" %} class="active"{% endif -%}>Home</a>
-      <a href="/about.html" {%- if active == "about" %} class="active"{% endif -%}>About Us</a>
-      <a href="/tours.html" {%- if active == "tours" or active.slice(0, 5) == "tour-" %} class="active"{% endif -%}>Tours &amp; Services</a>
-      <a href="/contact.html" {%- if active == "contact" %} class="active"{% endif -%}>Contact</a>
+      {% for it in site.nav %}
+      {% set base = it.href | replace('.html', '') | replace('/', '') %}
+      <a href="{{ it.href }}" {%- if base === active or (base == 'tours' and active.slice(0, 5) == 'tour-') %} class="active"{% endif -%}>{{ it.label }}</a>
+      {% endfor %}
       <a href="/contact.html" class="nav-cta"><span class="btn btn-primary btn-sm">Start Planning</span></a>
     </nav>
     <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
