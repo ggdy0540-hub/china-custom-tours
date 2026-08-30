@@ -1,6 +1,6 @@
 <header class="site-header">
   <div class="container nav-bar">
-    <a href="/index.html" class="brand" aria-label="{{ site.brandName }} — Home"><img src="/assets/img/brand-seal.jpg" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">{{ site.brandName }}</span><span class="brand-sub">{{ site.brandSub }}</span></span></a>
+    <a href="/index.html" class="brand" aria-label="{{ site.brandName }} — Home"><img src="{{ site.logo | default('/assets/img/brand-seal.jpg') }}" alt="Logo" class="brand-seal-img" data-cct-key="brand-seal" /><span class="brand-text"><span class="brand-name">{{ site.brandName }}</span><span class="brand-sub">{{ site.brandSub }}</span></span></a>
     <nav class="nav-links" aria-label="Main navigation">
       {% for it in site.nav %}
       {% set base = it.href | replace('.html', '') | replace('/', '') %}
