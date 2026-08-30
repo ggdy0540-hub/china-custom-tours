@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Content Manager — Jing · Meet China</title>
   <link rel="icon" href="../assets/img/brand-seal.svg" />
-  <link rel="cms-config-url" href="config.yml?v=2" type="text/yaml" />
+  <link rel="cms-config-url" href="config.yml?v=3" type="text/yaml" />
   <style>
     #boot-status {
       font: 14px/1.7 system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -50,11 +50,10 @@
       var el = document.getElementById('boot-status');
       if (el) el.innerHTML = html;
     }
-    function scriptFailed() {
-      report('<h2>脚本加载失败</h2><p>无法加载 <code>../assets/js/decap-cms.js</code></p>');
+    function scriptFailed(name) {
+      report('<h2>脚本加载失败</h2><p>无法加载 <code>' + name + '</code></p>');
     }
 
-    // Remove the status block as soon as Decap renders its root element.
     var observer = new MutationObserver(function () {
       if (document.getElementById('nc-root')) {
         var el = document.getElementById('boot-status');
@@ -69,6 +68,7 @@
       if (rendered) return;
       var out = '<h2>后台脚本未能渲染</h2>';
       out += '<dl>';
+      out += '<dt>window.netlifyIdentity</dt><dd>' + (typeof window.netlifyIdentity) + '</dd>';
       out += '<dt>window.DecapCms</dt><dd>' + (typeof window.DecapCms) + '</dd>';
       out += '<dt>window.CMS</dt><dd>' + (typeof window.CMS) + '</dd>';
       out += '<dt>body 子元素数量</dt><dd>' + document.body.children.length + '</dd>';
@@ -81,6 +81,12 @@
     }, 15000);
   </script>
 
-  <script src="../assets/js/decap-cms.js" onerror="scriptFailed()"></script>
+  <script src="../assets/js/netlify-identity-widget.js" onerror="scriptFailed('netlify-identity-widget.js')"></script>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init({ APIUrl: 'https://dynamic-bombolone-713dfe.netlify.app/.netlify/identity' });
+    }
+  </script>
+  <script src="../assets/js/decap-cms.js" onerror="scriptFailed('decap-cms.js')"></script>
 </body>
 </html>
