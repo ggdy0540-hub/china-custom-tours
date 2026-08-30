@@ -1,13 +1,10 @@
 # Decap CMS configuration — Jing · Meet China
-# Auth uses Netlify's free OAuth proxy.
-# GitHub OAuth App callback must be: https://api.netlify.com/auth/done
+# Auth via Netlify Identity + Git Gateway (no GitHub OAuth App needed).
 
 backend:
-  name: github
+  name: git-gateway
   repo: ggdy0540-hub/china-custom-tours
   branch: main
-  base_url: https://api.netlify.com
-  auth_endpoint: auth
   site_domain: dynamic-bombolone-713dfe.netlify.app
 
 # Where uploaded images are stored / referenced
