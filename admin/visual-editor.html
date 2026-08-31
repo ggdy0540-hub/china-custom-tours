@@ -136,6 +136,8 @@
       </div>
       <div class="spacer"></div>
       <button class="btn" id="rebuildBtn">重新构建</button>
+      <button class="btn" id="logoBtn" title="上传新 Logo">🖼 更换 Logo</button>
+      <input type="file" accept="image/*" id="globalLogoFile" style="display:none" />
       <span class="save-state" id="saveState">未修改</span>
       <button class="btn primary" id="saveBtn">保存修改</button>
     </div>
@@ -814,6 +816,48 @@
           if (j.ok) toast('构建完成，可用 Decap / git 发布', 'ok'); else toast('构建失败：' + (j.error || ''), 'err');
         }).catch(function (e) { btn.disabled = false; toast('构建失败：' + e, 'err'); });
       });
+
+      // 顶部「更换 Logo」快捷按钮：任何页面下都能一键上传并保存到 site.json
+      function saveSettingsSilent(settings) {
+        return fetch('/api/settings', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        }).then(function (r) { return r.json(); });
+      }
+      var logoBtn = document.getElementById('logoBtn');
+      var globalLogoFile = document.getElementById('globalLogoFile');
+      if (logoBtn && globalLogoFile) {
+        logoBtn.addEventListener('click', function () { globalLogoFile.click(); });
+        globalLogoFile.addEventListener('change', function () {
+          var file = globalLogoFile.files && globalLogoFile.files[0];
+          if (!file) return;
+          logoBtn.disabled = true; logoBtn.textContent = '上传中…';
+          toast('Logo 上传中…', '');
+          uploadImage(file).then(function (j) {
+            return fetch('/api/settings').then(function (r) { return r.json(); }).then(function (st) {
+              if (st.error) throw new Error(st.error);
+              st.logo = j.url;
+              SITE.logo = j.url;
+              if (state.settings) state.settings.logo = j.url;
+              return saveSettingsSilent(st).then(function (res) {
+                logoBtn.disabled = false; logoBtn.textContent = '🖼 更换 Logo';
+                globalLogoFile.value = '';
+                if (res.ok) {
+                  toast('Logo 已更换并保存' + (j.published ? '，已发布到线上' : ''), 'ok');
+                  schedulePreview();
+                  if (state.isSettings) renderRight();
+                } else {
+                  toast('Logo 已上传但保存失败：' + (res.error || ''), 'err');
+                }
+              });
+            });
+          }).catch(function (e) {
+            logoBtn.disabled = false; logoBtn.textContent = '🖼 更换 Logo';
+            globalLogoFile.value = '';
+            toast('Logo 更换失败：' + (e.message || e), 'err');
+          });
+        });
+      }
     }
 
     init();
