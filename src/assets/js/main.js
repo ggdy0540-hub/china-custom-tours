@@ -99,6 +99,14 @@
       })
         .then(function (res) {
           if (!res.ok) throw new Error("HTTP " + res.status);
+          var ct = (res.headers.get("content-type") || "").toLowerCase();
+          // Web3Forms sometimes returns a success HTML page instead of JSON.
+          if (ct.indexOf("application/json") < 0) {
+            return res.text().then(function (text) {
+              var isSuccess = /submitted successfully|thank you|success/i.test(text);
+              return { success: isSuccess, html: true, message: isSuccess ? "" : "Unexpected response" };
+            });
+          }
           return res.json();
         })
         .then(function (json) {
@@ -112,7 +120,7 @@
             success.scrollIntoView({ behavior: "smooth", block: "center" });
           }
         })
-        .catch(function () {
+        .catch(function (err) {
           btn.disabled = false;
           btn.innerHTML = original;
           if (errorEl) {
