@@ -518,6 +518,7 @@ sections:
     var strong = document.createElement('strong');
     strong.textContent = d.name || 'A traveler';
     info.appendChild(strong);
+    if (d.badge) { var badge = document.createElement('span'); badge.className = 'review-badge'; badge.textContent = d.badge; info.appendChild(badge); }
     if (d.sub) { var span = document.createElement('span'); span.textContent = d.sub; info.appendChild(span); }
     meta.appendChild(info);
     card.appendChild(meta);
@@ -589,7 +590,7 @@ sections:
         .then(function (res) {
           if (res.error) { console.warn('Reviews load failed:', res.error.message); return; }
           window.__liveReviews = (res.data || []).map(function (r) {
-            return { name: r.name, sub: '', stars: r.rating, message: r.message, avatar: null, created_at: r.created_at };
+            return { name: r.name, sub: '', stars: r.rating, message: r.message, avatar: null, created_at: r.created_at, badge: (r.status === 'pending' ? 'Pending review' : '✓ Verified') };
           });
           renderWall();
         });
