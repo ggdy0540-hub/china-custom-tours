@@ -4,13 +4,14 @@ permalink: /our-moments.html
 title: Our Moments — Jing · Meet China
 description: >-
   The faces, the laughter, and the little moments we still treasure — photos and
-  words from the travelers who became friends on the road across China with
-  Jing · Meet China.
+  words from the travelers who became friends on the road across China with Jing
+  · Meet China.
 active: our-moments
 sections:
   - label: Page Hero
     html: >
-      <section class="page-hero" style="background-image: url('assets/img/dest-chongqing.png');">
+      <section class="page-hero" style="background-image:
+      url('assets/img/dest-chongqing.png');">
 
             <div class="container">
 
@@ -23,10 +24,10 @@ sections:
             </div>
 
           </section>
-
   - label: Stats
     html: >
-      <section class="stat-strip" style="border-bottom: 1px solid var(--line);" aria-label="Traveler statistics">
+      <section class="stat-strip" style="border-bottom: 1px solid var(--line);"
+      aria-label="Traveler statistics">
 
             <div class="container">
 
@@ -45,9 +46,8 @@ sections:
             </div>
 
           </section>
-
   - label: Photo Gallery
-    html: >
+    html: |
       <section class="section">
 
             <div class="container">
@@ -58,13 +58,13 @@ sections:
 
                 <h2 class="display-h2">Snapshots from the road</h2>
 
-                <p>A few of our favorite pictures — little glimpses of the people who turned each trip into something we'll never forget. Every photo can be swapped in the editor whenever you'd like.</p>
+                <p>Some of our favorite photos—capturing the moments shared with the people who made every trip an unforgettable memory.</p>
 
               </div>
 
-              <div class="moment-carousel" data-carousel>
+              <div class="moment-carousel" data-carousel="">
 
-                <button class="carousel-btn prev" type="button" aria-label="Previous photos" data-dir="-1">&lsaquo;</button>
+                <button class="carousel-btn prev" type="button" aria-label="Previous photos" data-dir="-1">‹</button>
 
                 <div class="moment-track">
 
@@ -82,18 +82,17 @@ sections:
 
                 </div>
 
-                <button class="carousel-btn next" type="button" aria-label="Next photos" data-dir="1">&rsaquo;</button>
+                <button class="carousel-btn next" type="button" aria-label="Next photos" data-dir="1">›</button>
 
               </div>
 
-              <div class="carousel-dots" data-dots aria-hidden="true"></div>
+              <div class="carousel-dots" data-dots="" aria-hidden="true"></div>
 
             </div>
 
           </section>
-
   - label: Featured Story
-    html: >
+    html: |
       <section class="section">
 
             <div class="container">
@@ -179,9 +178,8 @@ sections:
             </div>
 
           </section>
-
   - label: Reviews
-    html: >
+    html: |
       <section class="section section-soft">
 
             <div class="container">
@@ -251,18 +249,17 @@ sections:
             </div>
 
           </section>
-
   - label: CTA
-    html: >
+    html: |
       <section class="cta-moments">
 
-            <span class="cta-moments-char" aria-hidden="true">缘</span>
+            <span class="cta-moments-char" aria-hidden="true">境</span>
 
             <div class="container">
 
               <div class="cta-moments-inner">
 
-                <span class="cta-seal" aria-hidden="true">缘</span>
+                <span class="cta-seal" aria-hidden="true">境</span>
 
                 <span class="eyebrow centered">Begin Your Journey</span>
 
@@ -270,7 +267,7 @@ sections:
 
                 <p class="cta-lead">Tell us what's in your heart — we'll shape the journey around it, and the next photo on this page might just be yours.</p>
 
-                <a href="contact.html" class="btn btn-primary">Start Planning <span class="arr">&rarr;</span></a>
+                <a href="contact.html" class="btn btn-primary">Start Planning <span class="arr">→</span></a>
 
                 <p class="cta-note">Every reply comes personally from Jing — usually within a day, always with care.</p>
 
@@ -279,7 +276,6 @@ sections:
             </div>
 
           </section>
-
 ---
 {% for s in sections %}
 {{ s.html | safe }}
