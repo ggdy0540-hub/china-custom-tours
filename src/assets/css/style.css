@@ -1105,6 +1105,8 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
 }
 .story-slide .split-media { position: relative; }
 .story-slide .split-media img { border-radius: var(--radius); box-shadow: var(--shadow-lg); width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+/* keep the seal stamp fully inside the image so it never covers text or dots */
+.story-slide .seal-stamp { bottom: 16px; right: 16px; }
 
 .carousel-btn {
   position: absolute;
@@ -1124,10 +1126,15 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   transition: background 0.2s, color 0.2s;
 }
 .carousel-btn:hover { background: var(--cinnabar); color: #fff; }
-.carousel-btn.prev { left: -10px; }
-.carousel-btn.next { right: -10px; }
+/* arrows rest in the blank margins outside the content column */
+.carousel-btn.prev { left: -22px; }
+.carousel-btn.next { right: -22px; }
+@media (min-width: 1400px) {
+  .carousel-btn.prev { left: -64px; }
+  .carousel-btn.next { right: -64px; }
+}
 
-.carousel-dots { display: flex; justify-content: center; gap: 9px; margin-top: 20px; }
+.carousel-dots { display: flex; justify-content: center; gap: 9px; margin-top: 26px; }
 .carousel-dots button {
   width: 9px; height: 9px; padding: 0;
   border: none; border-radius: 50%;
@@ -1140,6 +1147,7 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   .moment-slide { width: 72%; }
   .story-slide { grid-template-columns: 1fr; gap: 22px; }
   .story-slide .split-media { order: -1; }
+  .story-slide .seal-stamp { bottom: 12px; right: 12px; }
   .carousel-btn { width: 38px; height: 38px; font-size: 22px; }
   .carousel-btn.prev { left: 2px; }
   .carousel-btn.next { right: 2px; }
