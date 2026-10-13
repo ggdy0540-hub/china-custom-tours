@@ -1069,13 +1069,15 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   display: flex;
   gap: 16px;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   padding-bottom: 6px;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  /* hide scrollbars — sliding, arrows and dots still work */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.moment-track::-webkit-scrollbar, .story-track::-webkit-scrollbar { height: 8px; }
-.moment-track::-webkit-scrollbar-thumb, .story-track::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.moment-track::-webkit-scrollbar, .story-track::-webkit-scrollbar { display: none; }
 
 .moment-slide {
   flex: 0 0 auto;
