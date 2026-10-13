@@ -186,6 +186,45 @@ sections:
             </div>
 
           </section>
+  - label: Review Form
+    html: |
+      <section class="section review-form-section">
+            <div class="container">
+              <div class="review-form-card">
+                <div class="section-head">
+                  <span class="eyebrow centered">Your Turn</span>
+                  <h2 class="display-h2">Leave a note for the next traveler</h2>
+                  <p>Traveled with us? Tell the world about your favorite moment — your words appear on top of the wall the moment you post.</p>
+                </div>
+                <form id="review-form" class="review-form" novalidate>
+                  <div class="rf-grid">
+                    <label class="rf-field">
+                      <span class="rf-label">Your name</span>
+                      <input type="text" name="name" maxlength="40" required placeholder="e.g. The Smith Family">
+                    </label>
+                    <div class="rf-field">
+                      <span class="rf-label">Your rating</span>
+                      <div class="rf-stars" role="radiogroup" aria-label="Your rating">
+                        <button type="button" class="rf-star" data-val="1" aria-label="1 star">★</button>
+                        <button type="button" class="rf-star" data-val="2" aria-label="2 stars">★</button>
+                        <button type="button" class="rf-star" data-val="3" aria-label="3 stars">★</button>
+                        <button type="button" class="rf-star" data-val="4" aria-label="4 stars">★</button>
+                        <button type="button" class="rf-star is-on" data-val="5" aria-label="5 stars">★</button>
+                      </div>
+                    </div>
+                  </div>
+                  <label class="rf-field">
+                    <span class="rf-label">Your review</span>
+                    <textarea name="message" maxlength="600" rows="3" required placeholder="Tell us about your favorite moment in China…"></textarea>
+                  </label>
+                  <div class="rf-actions">
+                    <button type="submit" class="btn btn-primary">Post my review <span class="arr">→</span></button>
+                    <span class="rf-status" role="status" aria-live="polite"></span>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
   - label: Reviews
     html: |
       <section class="section section-soft">
@@ -444,43 +483,163 @@ sections:
   else document.addEventListener('DOMContentLoaded', initCarousels);
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function () {
-  function initReviews() {
-    document.querySelectorAll('.quote-grid').forEach(function (grid) {
-      var cards = grid.querySelectorAll('.quote-card');
-      var BATCH = 6;
-      if (cards.length <= BATCH) return; // 不多于一批时无需“查看更多”
-      var shown = BATCH;
-      for (var i = BATCH; i < cards.length; i++) cards[i].classList.add('batch-hidden');
-      var wrap = document.createElement('div');
-      wrap.className = 'reviews-more-wrap';
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'reviews-more';
-      btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
-      wrap.appendChild(btn);
-      grid.parentNode.insertBefore(wrap, grid.nextSibling);
-      btn.addEventListener('click', function () {
-        if (shown < cards.length) {
-          var next = Math.min(shown + BATCH, cards.length);
-          for (var j = shown; j < next; j++) cards[j].classList.remove('batch-hidden');
-          shown = next;
-          if (shown >= cards.length) {
-            btn.classList.add('open');
-            btn.innerHTML = 'Show less <span class="arr">&#8593;</span>';
-          }
-        } else {
-          for (var k = BATCH; k < cards.length; k++) cards[k].classList.add('batch-hidden');
-          shown = BATCH;
-          btn.classList.remove('open');
-          btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
-          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+  // ===== 留言评价板配置：把下面的占位换成你的 Supabase 项目信息（见聊天说明）=====
+  var SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  var SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+  function makeCard(d) {
+    var card = document.createElement('div');
+    card.className = 'card quote-card';
+    var stars = document.createElement('div');
+    stars.className = 'stars';
+    var n = d.stars || 5;
+    stars.setAttribute('aria-label', n + ' out of 5 stars');
+    stars.textContent = '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+    card.appendChild(stars);
+    var bq = document.createElement('blockquote');
+    bq.textContent = d.message || '';
+    card.appendChild(bq);
+    var meta = document.createElement('div');
+    meta.className = 'quote-meta';
+    if (d.avatar) {
+      var img = document.createElement('img');
+      img.loading = 'lazy'; img.className = 'avatar'; img.src = d.avatar; img.alt = d.name || '';
+      meta.appendChild(img);
+    } else {
+      var ini = document.createElement('div');
+      ini.className = 'avatar avatar-initials';
+      ini.textContent = (d.name || '?').trim().charAt(0).toUpperCase();
+      meta.appendChild(ini);
+    }
+    var info = document.createElement('div');
+    var strong = document.createElement('strong');
+    strong.textContent = d.name || 'A traveler';
+    info.appendChild(strong);
+    if (d.sub) { var span = document.createElement('span'); span.textContent = d.sub; info.appendChild(span); }
+    meta.appendChild(info);
+    card.appendChild(meta);
+    return card;
+  }
+
+  function collectCurated(grid) {
+    var out = [];
+    grid.querySelectorAll('.quote-card').forEach(function (c) {
+      var sa = c.querySelector('.stars') ? c.querySelector('.stars').getAttribute('aria-label') : '5';
+      var m = sa ? sa.match(/(\d+)/) : null;
+      out.push({
+        name: c.querySelector('.quote-meta strong') ? c.querySelector('.quote-meta strong').textContent : '',
+        sub: c.querySelector('.quote-meta span') ? c.querySelector('.quote-meta span').textContent : '',
+        stars: m ? parseInt(m[1], 10) : 5,
+        message: c.querySelector('blockquote') ? c.querySelector('blockquote').textContent : '',
+        avatar: c.querySelector('.avatar') ? c.querySelector('.avatar').src : null,
+        created_at: '2000-01-01T00:00:00Z'
       });
     });
+    return out;
   }
-  if (document.readyState !== 'loading') initReviews();
-  else document.addEventListener('DOMContentLoaded', initReviews);
+
+  function setupBatches(grid) {
+    var old = grid.parentNode.querySelector('.reviews-more-wrap');
+    if (old) old.remove();
+    var cards = grid.querySelectorAll('.quote-card');
+    var BATCH = 6;
+    if (cards.length <= BATCH) return;
+    var shown = BATCH;
+    for (var i = BATCH; i < cards.length; i++) cards[i].classList.add('batch-hidden');
+    var wrap = document.createElement('div');
+    wrap.className = 'reviews-more-wrap';
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'reviews-more';
+    btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
+    wrap.appendChild(btn);
+    grid.parentNode.insertBefore(wrap, grid.nextSibling);
+    btn.addEventListener('click', function () {
+      if (shown < cards.length) {
+        var next = Math.min(shown + BATCH, cards.length);
+        for (var j = shown; j < next; j++) cards[j].classList.remove('batch-hidden');
+        shown = next;
+        if (shown >= cards.length) { btn.classList.add('open'); btn.innerHTML = 'Show less <span class="arr">&#8593;</span>'; }
+      } else {
+        for (var k = BATCH; k < cards.length; k++) cards[k].classList.add('batch-hidden');
+        shown = BATCH; btn.classList.remove('open');
+        btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+
+  function renderWall() {
+    var grid = document.querySelector('.quote-grid');
+    if (!grid) return;
+    var all = collectCurated(grid).concat(window.__liveReviews || []);
+    all.sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+    grid.innerHTML = '';
+    all.forEach(function (d) { grid.appendChild(makeCard(d)); });
+    setupBatches(grid);
+  }
+
+  function loadLive() {
+    if (!window.supabase || !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_') === 0) return;
+    try {
+      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      sb.from('reviews').select('*').eq('status', 'approved').order('created_at', { ascending: false })
+        .then(function (res) {
+          if (res.error) { console.warn('Reviews load failed:', res.error.message); return; }
+          window.__liveReviews = (res.data || []).map(function (r) {
+            return { name: r.name, sub: '', stars: r.rating, message: r.message, avatar: null, created_at: r.created_at };
+          });
+          renderWall();
+        });
+    } catch (e) { console.warn('Supabase init failed', e); }
+  }
+
+  function initForm() {
+    var form = document.getElementById('review-form');
+    if (!form) return;
+    var stars = 5;
+    var starBtns = form.querySelectorAll('.rf-star');
+    starBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        stars = parseInt(b.getAttribute('data-val'), 10);
+        starBtns.forEach(function (x) { x.classList.toggle('is-on', parseInt(x.getAttribute('data-val'), 10) <= stars); });
+      });
+    });
+    var status = form.querySelector('.rf-status');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = form.querySelector('[name="name"]').value.trim();
+      var message = form.querySelector('[name="message"]').value.trim();
+      if (!name || !message) { status.textContent = 'Please add your name and a few words.'; status.className = 'rf-status rf-error'; return; }
+      if (!window.supabase || !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_') === 0) {
+        status.textContent = 'The review board is being set up — please check back shortly.';
+        status.className = 'rf-status rf-error'; return;
+      }
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true; status.textContent = 'Posting…'; status.className = 'rf-status';
+      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      sb.from('reviews').insert([{ name: name, rating: stars, message: message }])
+        .then(function (res) {
+          btn.disabled = false;
+          if (res.error) { status.textContent = 'Could not post — please try again.'; status.className = 'rf-status rf-error'; console.warn(res.error); return; }
+          status.textContent = 'Thank you! Your review is now on the wall.';
+          status.className = 'rf-status rf-ok';
+          form.reset();
+          starBtns.forEach(function (x) { x.classList.toggle('is-on', parseInt(x.getAttribute('data-val'), 10) <= 5); });
+          stars = 5;
+          loadLive();
+        });
+    });
+  }
+
+  function boot() {
+    document.querySelectorAll('.quote-grid').forEach(setupBatches);
+    initForm();
+    loadLive();
+  }
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
 })();
 </script>
