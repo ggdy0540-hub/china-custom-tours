@@ -57,25 +57,35 @@ sections:
 
                 <h2 class="display-h2">From our photo album</h2>
 
-                <p>Snapshots from the road — together with the people who made each journey special. Swap any photo right in the visual editor.</p>
+                <p>Swipe through snapshots from the road — together with the people who made each journey special. Swap any photo right in the visual editor.</p>
 
               </div>
 
-              <div class="moment-grid">
+              <div class="moment-carousel" data-carousel>
 
-                <div class="moment-card"><img src="assets/img/moment-1.jpg" alt="Traveler moment 1"><span class="moment-cap">Your caption</span></div>
+                <button class="carousel-btn prev" type="button" aria-label="Previous photos" data-dir="-1">&lsaquo;</button>
 
-                <div class="moment-card"><img src="assets/img/moment-2.jpg" alt="Traveler moment 2"><span class="moment-cap">Your caption</span></div>
+                <div class="moment-track">
 
-                <div class="moment-card"><img src="assets/img/moment-3.jpg" alt="Traveler moment 3"><span class="moment-cap">Your caption</span></div>
+                  <figure class="moment-slide"><img src="assets/img/moment-1.jpg" alt="Traveler moment 1"><figcaption>Your caption</figcaption></figure>
 
-                <div class="moment-card"><img src="assets/img/moment-4.jpg" alt="Traveler moment 4"><span class="moment-cap">Your caption</span></div>
+                  <figure class="moment-slide"><img src="assets/img/moment-2.jpg" alt="Traveler moment 2"><figcaption>Your caption</figcaption></figure>
 
-                <div class="moment-card"><img src="assets/img/moment-5.jpg" alt="Traveler moment 5"><span class="moment-cap">Your caption</span></div>
+                  <figure class="moment-slide"><img src="assets/img/moment-3.jpg" alt="Traveler moment 3"><figcaption>Your caption</figcaption></figure>
 
-                <div class="moment-card"><img src="assets/img/moment-6.jpg" alt="Traveler moment 6"><span class="moment-cap">Your caption</span></div>
+                  <figure class="moment-slide"><img src="assets/img/moment-4.jpg" alt="Traveler moment 4"><figcaption>Your caption</figcaption></figure>
+
+                  <figure class="moment-slide"><img src="assets/img/moment-5.jpg" alt="Traveler moment 5"><figcaption>Your caption</figcaption></figure>
+
+                  <figure class="moment-slide"><img src="assets/img/moment-6.jpg" alt="Traveler moment 6"><figcaption>Your caption</figcaption></figure>
+
+                </div>
+
+                <button class="carousel-btn next" type="button" aria-label="Next photos" data-dir="1">&rsaquo;</button>
 
               </div>
+
+              <div class="carousel-dots" data-dots aria-hidden="true"></div>
 
             </div>
 
@@ -85,27 +95,85 @@ sections:
     html: >
       <section class="section">
 
-            <div class="container split">
+            <div class="container">
 
-              <div class="split-media reveal">
+              <div class="section-head">
 
-                <img src="assets/img/moment-featured.jpg" alt="A featured moment with our travelers">
+                <span class="eyebrow centered">Featured Stories</span>
 
-                <div class="seal-stamp" aria-hidden="true">同行<br>时光</div>
+                <h2 class="display-h2">Stories from the road</h2>
+
+                <p>Real journeys, told by the people who lived them. Swipe to read the next one.</p>
+
+              </div>
+
+              <div class="story-carousel" data-carousel="story">
+
+                <button class="carousel-btn prev" type="button" aria-label="Previous story" data-dir="-1">&lsaquo;</button>
+
+                <div class="story-track">
+
+                  <article class="story-slide">
+
+                    <div class="split-media"><img src="assets/img/moment-featured.jpg" alt="A featured moment with our travelers"><div class="seal-stamp" aria-hidden="true">同行<br>时光</div></div>
+
+                    <div class="split-copy">
+
+                      <span class="eyebrow">Featured Story</span>
+
+                      <h2 class="display-h2">A sunrise on the Great Wall, just the four of us</h2>
+
+                      <p>We arrived before dawn, lanterns still glowing in the watchtower below. For two hours it was only our family, the wall, and the first light spilling over the mountains.</p>
+
+                      <p>It is moments like this — quiet, unscripted, entirely yours — that we design every journey around. Edit this story, or replace the photo, whenever you like.</p>
+
+                    </div>
+
+                  </article>
+
+                  <article class="story-slide">
+
+                    <div class="split-media"><img src="assets/img/moment-2.jpg" alt="A cooking class in Chengdu"><div class="seal-stamp" aria-hidden="true">蜀味<br>之约</div></div>
+
+                    <div class="split-copy">
+
+                      <span class="eyebrow">Featured Story</span>
+
+                      <h2 class="display-h2">A Sichuan kitchen, and a grandmother's recipe</h2>
+
+                      <p>Between chop and wok, our traveler learned to fold dumplings the way a Chengdu grandmother has for 60 years — then ate the results by a window fogged with steam.</p>
+
+                      <p>Food is the fastest way to a place's heart. Tell us your favorites and we'll build the table around them.</p>
+
+                    </div>
+
+                  </article>
+
+                  <article class="story-slide">
+
+                    <div class="split-media"><img src="assets/img/moment-4.jpg" alt="A Li River cruise at Guilin"><div class="seal-stamp" aria-hidden="true">漓江<br>同行</div></div>
+
+                    <div class="split-copy">
+
+                      <span class="eyebrow">Featured Story</span>
+
+                      <h2 class="display-h2">Drifting the Li River at golden hour</h2>
+
+                      <p>No crowds, no rush — just a private boat, mist on the karst peaks, and a couple who'd dreamed of this view since they first saw it in a magazine.</p>
+
+                      <p>Replace this photo and story with one of your own favorite moments whenever you like.</p>
+
+                    </div>
+
+                  </article>
+
+                </div>
+
+                <button class="carousel-btn next" type="button" aria-label="Next story" data-dir="1">&rsaquo;</button>
 
               </div>
 
-              <div class="split-copy reveal reveal-d1">
-
-                <span class="eyebrow">Featured Story</span>
-
-                <h2 class="display-h2">A sunrise on the Great Wall, just the four of us</h2>
-
-                <p>We arrived before dawn, lanterns still glowing in the watchtower below. For two hours it was only our family, the wall, and the first light spilling over the mountains.</p>
-
-                <p>It is moments like this — quiet, unscripted, entirely yours — that we design every journey around. Edit this story, or replace the photo, whenever you like.</p>
-
-              </div>
+              <div class="carousel-dots" data-dots aria-hidden="true"></div>
 
             </div>
 
@@ -204,3 +272,46 @@ sections:
 {{ s.html | safe }}
 
 {% endfor %}
+<script>
+(function () {
+  function initCarousels() {
+    document.querySelectorAll('[data-carousel]').forEach(function (root) {
+      var track = root.querySelector('.moment-track, .story-track');
+      if (!track) return;
+      var dots = root.parentElement ? root.parentElement.querySelector('[data-dots]') : null;
+      var slides = track.children;
+      var step = slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth;
+      if (dots && !dots.children.length) {
+        for (var i = 0; i < slides.length; i++) {
+          (function (idx) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+            b.addEventListener('click', function () {
+              track.scrollTo({ left: idx * step, behavior: 'smooth' });
+            });
+            dots.appendChild(b);
+          })(i);
+        }
+      }
+      root.querySelectorAll('.carousel-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var dir = btn.getAttribute('data-dir') === '1' ? 1 : -1;
+          track.scrollBy({ left: dir * step, behavior: 'smooth' });
+        });
+      });
+      function update() {
+        if (!dots) return;
+        var idx = Math.round(track.scrollLeft / step);
+        for (var i = 0; i < dots.children.length; i++) {
+          dots.children[i].classList.toggle('active', i === idx);
+        }
+      }
+      track.addEventListener('scroll', function () { window.requestAnimationFrame(update); }, { passive: true });
+      update();
+    });
+  }
+  if (document.readyState !== 'loading') initCarousels();
+  else document.addEventListener('DOMContentLoaded', initCarousels);
+})();
+</script>
