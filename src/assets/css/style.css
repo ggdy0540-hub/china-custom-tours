@@ -675,7 +675,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); color: var(--ink); line-heigh
 .footer-col ul { display: flex; flex-direction: column; gap: 12px; }
 .footer-col a { color: rgba(255, 255, 255, 0.68); font-size: 0.92rem; }
 .footer-col a:hover { color: var(--gold); }
-.footer-col .info-line { padding: 4px 0; color: rgba(255, 255, 255, 0.68); font-size: 0.92rem; }
+.footer-col .info-line { display: flex; gap: 10px; align-items: baseline; padding: 4px 0; color: rgba(255, 255, 255, 0.68); font-size: 0.92rem; }
 .footer-col .info-line .k { color: rgba(255, 255, 255, 0.45); min-width: 60px; }
 .footer-col .info-line a { font-weight: 500; }
 .footer-bottom {
