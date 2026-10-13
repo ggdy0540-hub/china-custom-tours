@@ -1024,3 +1024,41 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   .hero-actions .btn { width: 100%; }
   .brand-name { font-size: 1.05rem; }
 }
+
+/* Our Moments page — traveler photo gallery */
+.section-soft { background: var(--paper, #f7f5f0); }
+.moment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.moment-card {
+  position: relative;
+  border-radius: var(--radius, 12px);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-soft, #efece6);
+  border: 1px solid var(--line);
+}
+.moment-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.moment-card:hover img { transform: scale(1.04); }
+.moment-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(28, 28, 26, 0.55);
+  letter-spacing: 0.02em;
+}
+@media (max-width: 768px) {
+  .moment-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
