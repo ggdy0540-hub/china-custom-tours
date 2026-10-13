@@ -244,6 +244,102 @@ sections:
 
                 </div>
 
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"The pandas in Chengdu were a delight, but it was the unhurried tea-house visit with our guide that we remember most. Thank you for the gentle pace."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-mt.svg" alt="The Hendersons">
+
+                    <div><strong>The Hendersons</strong><span>Australia · Chengdu &amp; Beyond</span></div>
+
+                  </div>
+
+                </div>
+
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"We celebrated our 25th anniversary on this trip. Every detail felt personal — a handwritten note at the hotel, a sunset toast by the river. Truly unforgettable."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-sw.svg" alt="Robert &amp; Maria Klein">
+
+                    <div><strong>Robert &amp; Maria Klein</strong><span>Germany · Scenic China Anniversary</span></div>
+
+                  </div>
+
+                </div>
+
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"As a solo traveler I never once felt alone. The home-cooked lunch with a family in Xi'an is still the highlight of my year."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-im.svg" alt="Aiko Tanaka">
+
+                    <div><strong>Aiko Tanaka</strong><span>Japan · Highlights of China</span></div>
+
+                  </div>
+
+                </div>
+
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"Our teenagers actually put their phones down — the Great Wall hike and the cooking class did that. Worth every single moment."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-sw.svg" alt="The Park Family">
+
+                    <div><strong>The Park Family</strong><span>Canada · Family Adventure</span></div>
+
+                  </div>
+
+                </div>
+
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"From first email to final goodbye, everything was handled with such care. We've already sent three friends your way."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-mt.svg" alt="David &amp; Emma Brooks">
+
+                    <div><strong>David &amp; Emma Brooks</strong><span>New Zealand · Classic China</span></div>
+
+                  </div>
+
+                </div>
+
+                <div class="card quote-card reveal">
+
+                  <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+
+                  <blockquote>"The Zhangjiajie glass walk terrified and thrilled me in equal measure — and our guide's patience made it possible. Thank you."</blockquote>
+
+                  <div class="quote-meta">
+
+                    <img class="avatar" src="assets/img/avatar-im.svg" alt="Lucia Fernández">
+
+                    <div><strong>Lucia Fernández</strong><span>Spain · Nature &amp; Peaks</span></div>
+
+                  </div>
+
+                </div>
+
               </div>
 
             </div>
@@ -322,5 +418,45 @@ sections:
   }
   if (document.readyState !== 'loading') initCarousels();
   else document.addEventListener('DOMContentLoaded', initCarousels);
+})();
+</script>
+<script>
+(function () {
+  function initReviews() {
+    document.querySelectorAll('.quote-grid').forEach(function (grid) {
+      var cards = grid.querySelectorAll('.quote-card');
+      var BATCH = 6;
+      if (cards.length <= BATCH) return; // 不多于一批时无需“查看更多”
+      var shown = BATCH;
+      for (var i = BATCH; i < cards.length; i++) cards[i].classList.add('batch-hidden');
+      var wrap = document.createElement('div');
+      wrap.className = 'reviews-more-wrap';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'reviews-more';
+      btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
+      wrap.appendChild(btn);
+      grid.parentNode.insertBefore(wrap, grid.nextSibling);
+      btn.addEventListener('click', function () {
+        if (shown < cards.length) {
+          var next = Math.min(shown + BATCH, cards.length);
+          for (var j = shown; j < next; j++) cards[j].classList.remove('batch-hidden');
+          shown = next;
+          if (shown >= cards.length) {
+            btn.classList.add('open');
+            btn.innerHTML = 'Show less <span class="arr">&#8593;</span>';
+          }
+        } else {
+          for (var k = BATCH; k < cards.length; k++) cards[k].classList.add('batch-hidden');
+          shown = BATCH;
+          btn.classList.remove('open');
+          btn.innerHTML = 'Read more reviews <span class="arr">&#8595;</span>';
+          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
+  if (document.readyState !== 'loading') initReviews();
+  else document.addEventListener('DOMContentLoaded', initReviews);
 })();
 </script>
