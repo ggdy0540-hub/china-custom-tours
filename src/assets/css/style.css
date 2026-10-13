@@ -1104,7 +1104,7 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   align-items: center;
 }
 .story-slide .split-media { position: relative; }
-.story-slide .split-media img { border-radius: var(--radius); box-shadow: var(--shadow-lg); width: 100%; object-fit: cover; }
+.story-slide .split-media img { border-radius: var(--radius); box-shadow: var(--shadow-lg); width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 
 .carousel-btn {
   position: absolute;
