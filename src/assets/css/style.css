@@ -1152,3 +1152,55 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   .carousel-btn.prev { left: 2px; }
   .carousel-btn.next { right: 2px; }
 }
+
+/* ---------- Our Moments CTA (ink & gold) ---------- */
+.cta-moments {
+  position: relative;
+  background: linear-gradient(165deg, #2e3740 0%, var(--ink) 48%, #1a2026 100%);
+  color: var(--white);
+  overflow: hidden;
+  padding: 100px 0 92px;
+  text-align: center;
+}
+.cta-moments::before, .cta-moments::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(194, 160, 97, 0.6), transparent);
+}
+.cta-moments::before { top: 0; }
+.cta-moments::after { bottom: 0; }
+.cta-moments-char {
+  position: absolute; right: -36px; top: 50%;
+  transform: translateY(-50%) rotate(5deg);
+  font-family: var(--font-zh);
+  font-size: clamp(14rem, 26vw, 24rem);
+  line-height: 1;
+  color: rgba(194, 160, 97, 0.08);
+  pointer-events: none; user-select: none;
+}
+.cta-moments-inner { position: relative; z-index: 2; max-width: 680px; margin: 0 auto; }
+.cta-seal {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 9px;
+  background: var(--cinnabar); color: var(--white);
+  font-family: var(--font-zh); font-size: 23px; font-weight: 700;
+  transform: rotate(-4deg);
+  box-shadow: 0 8px 18px rgba(176, 58, 46, 0.45);
+  margin-bottom: 20px;
+}
+.cta-moments .eyebrow { color: var(--gold); }
+.cta-moments h2 { color: var(--white); margin: 14px 0 0; }
+.cta-moments .cta-lead {
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 600px; margin: 18px auto 36px;
+  font-size: 1.06rem; line-height: 1.85;
+}
+.cta-moments .btn-primary {
+  background: var(--gold); color: var(--ink);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+.cta-moments .btn-primary:hover { background: var(--gold-dark); color: var(--white); }
+.cta-moments .cta-note { margin: 24px auto 0; font-size: 0.9rem; color: rgba(255, 255, 255, 0.5); }
+@media (max-width: 768px) {
+  .cta-moments { padding: 76px 0 68px; }
+  .cta-moments-char { right: -16px; }
+}
