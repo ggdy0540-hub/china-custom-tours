@@ -306,6 +306,21 @@ h1, h2, h3, h4 { font-family: var(--font-display); color: var(--ink); line-heigh
 .quote-meta strong { display: block; color: var(--ink); font-size: 0.95rem; line-height: 1.3; }
 .quote-meta span { font-size: 0.82rem; color: var(--muted); }
 
+/* 评价区：查看更多（分批展示） */
+.quote-card.batch-hidden { display: none; }
+.reviews-more-wrap { text-align: center; }
+.reviews-more {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin-top: 40px; padding: 13px 32px;
+  font: 600 0.96rem/1 var(--font-display, Georgia, serif);
+  color: var(--cinnabar); background: transparent;
+  border: 1.5px solid var(--cinnabar); border-radius: 999px;
+  cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.reviews-more:hover { background: var(--cinnabar); color: var(--white); transform: translateY(-1px); }
+.reviews-more .arr { transition: transform 0.2s; }
+.reviews-more.open .arr { transform: rotate(180deg); }
+
 /* CTA band */
 .cta-band { position: relative; background: var(--cinnabar); color: var(--white); overflow: hidden; }
 .cta-band::after {
