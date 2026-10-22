@@ -483,12 +483,11 @@ sections:
   else document.addEventListener('DOMContentLoaded', initCarousels);
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function () {
-  // ===== 留言评价板配置：把下面的占位换成你的 Supabase 项目信息（见聊天说明）=====
-  var SUPABASE_URL = 'https://jayysjqlqhbbnopeokrl.supabase.co';
-  var SUPABASE_ANON_KEY = 'sb_publishable_D4o5kdlIpCYVGE7BNFanpg_y4QsA4je';
+  // ===== 留言评价板后端：Cloudflare Worker + D1（配置见聊天说明）=====
+  var CF_WORKER = 'https://meet-china-reviews.ggdy0540.workers.dev'; // Cloudflare Worker 留言板后端
+  var configured = CF_WORKER.indexOf('YOUR_') !== 0;
 
   function makeCard(d) {
     var card = document.createElement('div');
@@ -583,18 +582,16 @@ sections:
   }
 
   function loadLive() {
-    if (!window.supabase || !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_') === 0) return;
-    try {
-      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      sb.from('reviews').select('*').eq('status', 'approved').order('created_at', { ascending: false })
-        .then(function (res) {
-          if (res.error) { console.warn('Reviews load failed:', res.error.message); return; }
-          window.__liveReviews = (res.data || []).map(function (r) {
-            return { name: r.name, sub: '', stars: r.rating, message: r.message, avatar: null, created_at: r.created_at, badge: (r.status === 'pending' ? 'Pending review' : '✓ Verified') };
-          });
-          renderWall();
+    if (!configured) return;
+    fetch(CF_WORKER + '/reviews', { headers: { 'Content-Type': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        window.__liveReviews = (rows || []).map(function (r) {
+          return { name: r.name, sub: '', stars: r.rating || 5, message: r.message, avatar: null, created_at: r.created_at, badge: '✓ Verified' };
         });
-    } catch (e) { console.warn('Supabase init failed', e); }
+        renderWall();
+      })
+      .catch(function (e) { console.warn('Reviews load failed', e); });
   }
 
   function initForm() {
@@ -614,24 +611,29 @@ sections:
       var name = form.querySelector('[name="name"]').value.trim();
       var message = form.querySelector('[name="message"]').value.trim();
       if (!name || !message) { status.textContent = 'Please add your name and a few words.'; status.className = 'rf-status rf-error'; return; }
-      if (!window.supabase || !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_') === 0) {
+      if (!configured) {
         status.textContent = 'The review board is being set up — please check back shortly.';
         status.className = 'rf-status rf-error'; return;
       }
       var btn = form.querySelector('button[type="submit"]');
       btn.disabled = true; status.textContent = 'Posting…'; status.className = 'rf-status';
-      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      sb.from('reviews').insert([{ name: name, rating: stars, message: message }])
-        .then(function (res) {
+      fetch(CF_WORKER + '/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, rating: stars, message: message })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
           btn.disabled = false;
-          if (res.error) { status.textContent = 'Could not post — please try again.'; status.className = 'rf-status rf-error'; console.warn(res.error); return; }
+          if (data && data.error) { status.textContent = 'Could not post — please try again.'; status.className = 'rf-status rf-error'; console.warn(data); return; }
           status.textContent = 'Thank you! Your review is now on the wall.';
           status.className = 'rf-status rf-ok';
           form.reset();
           starBtns.forEach(function (x) { x.classList.toggle('is-on', parseInt(x.getAttribute('data-val'), 10) <= 5); });
           stars = 5;
           loadLive();
-        });
+        })
+        .catch(function (e) { btn.disabled = false; status.textContent = 'Network error — please try again.'; status.className = 'rf-status rf-error'; console.warn(e); });
     });
   }
 
