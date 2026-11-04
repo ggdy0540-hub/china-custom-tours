@@ -1268,3 +1268,77 @@ body.edit-mode .cct-avatar-chip { display: inline-flex; }
   .review-form-card { padding: 30px 22px; }
   .rf-grid { grid-template-columns: 1fr; gap: 16px; }
 }
+
+/* ===== Hero 品牌宣传片背景（仅首页带视频的 Hero） ===== */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero-has-video::before {
+  z-index: 1;
+  background: linear-gradient(180deg,
+    rgba(16, 20, 25, 0.64) 0%,
+    rgba(16, 20, 25, 0.48) 42%,
+    rgba(16, 20, 25, 0.82) 100%);
+}
+.hero-has-video > .container { position: relative; z-index: 2; }
+.hero-has-video .hero-zh { z-index: 2; }
+.hero-has-video h1 { text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55); }
+
+.hero-controls {
+  position: absolute;
+  left: 4%;
+  bottom: 30px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hero-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(18, 23, 28, 0.46);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.hero-ctrl:hover {
+  background: rgba(18, 23, 28, 0.74);
+  border-color: var(--gold, #c8a24a);
+  transform: translateY(-1px);
+}
+.hero-ctrl:focus-visible { outline: 2px solid var(--gold, #c8a24a); outline-offset: 2px; }
+.hc-ico { display: inline-flex; width: 15px; height: 15px; flex: 0 0 15px; }
+.hc-ico svg { width: 100%; height: 100%; fill: currentColor; }
+
+@media (max-width: 768px) {
+  .hero-controls {
+    position: fixed;
+    left: auto;
+    right: 16px;
+    bottom: 16px;
+    z-index: 40;
+    gap: 8px;
+    transition: opacity 0.3s ease;
+  }
+  .hero-controls.is-hidden { opacity: 0; pointer-events: none; }
+  .hero-ctrl { padding: 8px 12px; font-size: 0.68rem; }
+  .hero-ctrl.hc-pause { display: none; }  /* 移动端保留「原声」与「全片观看」 */
+}
