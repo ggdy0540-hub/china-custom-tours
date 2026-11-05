@@ -140,12 +140,13 @@ const PAGES = {
   'tour-nature': { file: 'tour-nature.njk', label: '自然线路 Nature', active: 'tour-nature' },
   'dest-shanghai': { file: 'dest-shanghai.njk', label: '目的地 · 上海', active: 'dest' },
   'dest-beijing': { file: 'dest-beijing.njk', label: '目的地 · 北京', active: 'dest' },
-  'dest-xian': { file: 'dest-xian.njk', label: '目的地 · 西安', active: 'dest' },
+  'dest-chongqing': { file: 'dest-chongqing.njk', label: '目的地 · 重庆', active: 'dest' },
   'dest-chengdu': { file: 'dest-chengdu.njk', label: '目的地 · 成都', active: 'dest' },
   'dest-guilin': { file: 'dest-guilin.njk', label: '目的地 · 桂林', active: 'dest' },
   'dest-zhangjiajie': { file: 'dest-zhangjiajie.njk', label: '目的地 · 张家界', active: 'dest' },
   contact: { file: 'contact.njk', label: '联系我们 Contact', active: 'contact' },
   faq: { file: 'faq.njk', label: '常见问题 FAQ', active: 'faq' },
+  'our-moments': { file: 'our-moments.njk', label: '客户时光 Our Moments', active: 'our-moments' },
   privacy: { file: 'privacy.njk', label: '隐私政策 Privacy', active: 'privacy' },
   terms: { file: 'terms.njk', label: '服务条款 Terms', active: 'terms' }
 };
@@ -161,6 +162,11 @@ const MIME = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.gif': 'image/gif',
+  '.avif': 'image/avif',
+  '.mp4': 'video/mp4',
+  '.m4v': 'video/mp4',
+  '.webm': 'video/webm',
+  '.mov': 'video/quicktime',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
   '.woff': 'font/woff',
@@ -193,6 +199,69 @@ function writeSettings(obj) {
   } catch (e) {
     try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch (_) {}
     throw new Error('保存站点设置失败：' + (e.message || e));
+  }
+  return out;
+}
+
+/* ===== 首页轮播配置（src/_data/heroSlides.json） ===== */
+const HERO_SLIDES_PATH = path.join(SRC, '_data', 'heroSlides.json');
+
+function cleanAssetUrl(v) {
+  let s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  s = s.replace(/['"\\]/g, '');
+  if (s.indexOf('..') >= 0) return '';
+  if (/^https?:\/\//i.test(s)) return s;
+  if (s.charAt(0) !== '/') s = '/' + s.replace(/^\.\//, '');
+  return s;
+}
+
+function normalizeSlides(arr) {
+  if (!Array.isArray(arr)) throw new Error('轮播配置必须是数组');
+  if (arr.length < 1) throw new Error('至少要保留 1 帧');
+  if (arr.length > 12) throw new Error('轮播最多 12 帧（再多会拖慢首屏）');
+  return arr.map(function (f, i) {
+    f = f || {};
+    const type = f.type === 'video' ? 'video' : 'image';
+    const o = {
+      type: type,
+      src: cleanAssetUrl(f.src),
+      caption: String(f.caption || '').replace(/[<>]/g, '').slice(0, 120),
+      dur: Math.max(2, Math.min(180, Number(f.dur) || 7))
+    };
+    if (type === 'image') {
+      if (!o.src) throw new Error('第 ' + (i + 1) + ' 帧（静态图）缺少图片地址');
+    } else {
+      o.video = cleanAssetUrl(f.video);
+      o.videoMobile = cleanAssetUrl(f.videoMobile);
+      o.poster = cleanAssetUrl(f.poster);
+      if (!o.video && !o.videoMobile) throw new Error('第 ' + (i + 1) + ' 帧（视频）缺少视频地址');
+      o.loopStart = Math.max(0, Math.min(600, Number(f.loopStart) || 0));
+      o.loopEnd = Math.max(0, Math.min(600, Number(f.loopEnd) || 0));
+      if (o.loopEnd > 0 && o.loopEnd <= o.loopStart) o.loopEnd = 0;
+    }
+    return o;
+  });
+}
+
+function readHeroSlides() {
+  if (!fs.existsSync(HERO_SLIDES_PATH)) return [];
+  return JSON.parse(fs.readFileSync(HERO_SLIDES_PATH, 'utf8'));
+}
+
+function writeHeroSlides(arr) {
+  const out = JSON.stringify(normalizeSlides(arr), null, 2) + '\n';
+  const tmp = HERO_SLIDES_PATH + '.tmp-' + Date.now();
+  try {
+    fs.writeFileSync(tmp, out, 'utf8');
+    try { fs.renameSync(tmp, HERO_SLIDES_PATH); }
+    catch (renameErr) {
+      try { fs.unlinkSync(tmp); } catch (_) {}
+      fs.writeFileSync(HERO_SLIDES_PATH, out, 'utf8');
+    }
+  } catch (e) {
+    try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch (_) {}
+    throw new Error('保存轮播配置失败：' + (e.message || e));
   }
   return out;
 }
@@ -382,6 +451,33 @@ const server = http.createServer(function (req, res) {
     return;
   }
 
+  /* ===== 首屏轮播：读取 / 保存 ===== */
+  if (urlPath === '/api/hero-slides' && method === 'GET') {
+    try {
+      return sendJSON(res, 200, { slides: readHeroSlides() });
+    } catch (e) {
+      return sendJSON(res, 500, { error: String(e.message || e) });
+    }
+  }
+  if (urlPath === '/api/hero-slides' && method === 'POST') {
+    let body = '';
+    req.on('data', function (c) { body += c; });
+    req.on('end', function () {
+      let payload;
+      try { payload = JSON.parse(body); }
+      catch (e) { return sendJSON(res, 400, { error: 'invalid json' }); }
+      let out;
+      try { out = writeHeroSlides(payload.slides); }
+      catch (e) { return sendJSON(res, 400, { error: String(e.message || e) }); }
+      publishToGitHub('src/_data/heroSlides.json', out).then(function (pub) {
+        if (pub.skipped) return sendJSON(res, 200, { ok: true, published: false, note: pub.reason });
+        if (pub.ok) return sendJSON(res, 200, { ok: true, published: true });
+        return sendJSON(res, 200, { ok: true, published: false, warn: pub.error });
+      });
+    });
+    return;
+  }
+
   if (urlPath === '/api/upload' && method === 'POST') {
     let body = '';
     req.on('data', function (c) { body += c; });
@@ -391,14 +487,19 @@ const server = http.createServer(function (req, res) {
       catch (e) { return sendJSON(res, 400, { error: 'invalid json' }); }
 
       const data = payload.data; // base64（不含 data: 前缀）
+      const isVideo = payload.kind === 'video';
       let filename = String(payload.filename || '').replace(/[^A-Za-z0-9._\-]/g, '');
       if (!filename) return sendJSON(res, 400, { error: '无效的文件名' });
-      if (!data) return sendJSON(res, 400, { error: '缺少图片数据' });
+      if (!data) return sendJSON(res, 400, { error: '缺少文件数据' });
 
       let buf;
       try { buf = Buffer.from(data, 'base64'); }
       catch (e) { return sendJSON(res, 400, { error: 'base64 解码失败' }); }
-      if (buf.length > 8 * 1024 * 1024) return sendJSON(res, 400, { error: '图片过大（上限 8MB）' });
+      const maxBytes = isVideo ? 20 * 1024 * 1024 : 8 * 1024 * 1024;
+      if (buf.length > maxBytes) return sendJSON(res, 400, {
+        error: (isVideo ? '视频' : '图片') + '过大（上限 ' + Math.round(maxBytes / 1048576) + 'MB）' +
+               (isVideo ? '；更大文件请先压缩，或改用外链地址' : '')
+      });
 
       // 通过文件魔数推断真实格式，兼容无扩展名或扩展名不准的文件
       function detectImageExt(buffer) {
@@ -415,19 +516,41 @@ const server = http.createServer(function (req, res) {
         return '';
       }
 
-      const allowed = ['.png', '.jpg', '.jpeg', '.jpe', '.jfif', '.webp', '.gif', '.svg', '.avif', '.bmp', '.tif', '.tiff'];
+      function detectVideoExt(buffer) {
+        if (buffer.slice(4, 8).toString('ascii') === 'ftyp') return '.mp4';
+        if (buffer.slice(0, 4).toString('hex') === '1a45dfa3') return '.webm';
+        return '';
+      }
+
+      const allowed = isVideo
+        ? ['.mp4', '.m4v', '.webm']
+        : ['.png', '.jpg', '.jpeg', '.jpe', '.jfif', '.webp', '.gif', '.svg', '.avif', '.bmp', '.tif', '.tiff'];
       let ext = path.extname(filename).toLowerCase();
-      // 如果扩展名缺失或不被允许，用魔数修正
-      if (!ext || allowed.indexOf(ext) < 0) {
+      // 视频一律用魔数校验（防止任意文件伪装成 .mp4 上传，污染仓库）
+      if (isVideo) {
+        const detected = detectVideoExt(buf);
+        if (!detected) return sendJSON(res, 400, {
+          error: '无法识别视频格式：请上传 mp4 / webm 格式（H.264 编码兼容性最好）'
+        });
+        const stem = filename.slice(0, filename.length - ext.length) || 'upload-' + Date.now().toString(36);
+        filename = stem + detected;
+        ext = detected;
+      } else if (!ext || allowed.indexOf(ext) < 0) {
         const detected = detectImageExt(buf);
-        if (!detected) return sendJSON(res, 400, { error: '无法识别图片格式：请上传 png/jpg/webp/gif/svg/avif 格式的图片' });
+        if (!detected) return sendJSON(res, 400, {
+          error: '无法识别图片格式：请上传 png/jpg/webp/gif/svg/avif 格式的图片'
+        });
         const stem = filename.slice(0, filename.length - ext.length) || 'upload-' + Date.now().toString(36);
         filename = stem + detected;
         ext = detected;
       }
-      if (allowed.indexOf(ext) < 0) return sendJSON(res, 400, { error: '不支持的图片格式：' + ext + '（仅限 png/jpg/webp/gif/svg/avif）' });
+      if (allowed.indexOf(ext) < 0) return sendJSON(res, 400, {
+        error: (isVideo ? '不支持的视频格式：' : '不支持的图片格式：') + ext
+      });
 
-      const dir = path.join(SRC, 'assets', 'img');
+      const assetDir = isVideo ? 'video' : 'img';
+      const publicPrefix = '/assets/' + assetDir + '/';
+      const dir = path.join(SRC, 'assets', assetDir);
       if (!fs.existsSync(dir)) { try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {} }
       let target = path.join(dir, filename);
       // 防目录穿越
@@ -439,15 +562,16 @@ const server = http.createServer(function (req, res) {
         target = path.join(dir, filename);
       }
       try { fs.writeFileSync(target, buf); }
-      catch (e) { return sendJSON(res, 500, { error: '写入图片失败：' + (e.message || e) }); }
+      catch (e) { return sendJSON(res, 500, { error: '写入文件失败：' + (e.message || e) }); }
 
-      const ghPath = 'src/assets/img/' + filename;
+      const ghPath = 'src/assets/' + assetDir + '/' + filename;
       const b64 = buf.toString('base64');
+      const fileUrl = publicPrefix + filename;
       publishBinaryToGitHub(ghPath, b64).then(function (pub) {
-        if (pub.skipped) return sendJSON(res, 200, { ok: true, url: '/assets/img/' + filename, published: false, note: pub.reason });
-        if (pub.ok) return sendJSON(res, 200, { ok: true, url: '/assets/img/' + filename, published: true });
+        if (pub.skipped) return sendJSON(res, 200, { ok: true, url: fileUrl, published: false, note: pub.reason });
+        if (pub.ok) return sendJSON(res, 200, { ok: true, url: fileUrl, published: true });
         // 发布失败不影响本地已保存
-        return sendJSON(res, 200, { ok: true, url: '/assets/img/' + filename, published: false, warn: pub.error });
+        return sendJSON(res, 200, { ok: true, url: fileUrl, published: false, warn: pub.error });
       });
     });
     return;
