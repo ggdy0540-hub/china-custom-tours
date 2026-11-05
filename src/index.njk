@@ -468,4 +468,5 @@ sections:
 
 {% endfor %}
 
+<script type="application/json" id="hero-slides">{{ heroSlides | dump | replace("</", "<\\/") | safe }}</script>
 <script src="/assets/js/hero-carousel.js" defer></script>
