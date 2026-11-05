@@ -1,7 +1,9 @@
 /* 首页 Hero 自动左右轮播
-   - 静态图帧：保留原有标题 / 正文 / CTA（可在可视化编辑器里改）
-   - 视频帧：文字层自动淡出，画面完整呈现，不再被文字板块遮挡
-   - 想增删静态图，只改下面 FRAMES 数组即可（type: 'image' / 'video'，dur 单位毫秒） */
+   - 帧配置来自 src/_data/heroSlides.json，构建时注入页面 #hero-slides
+   - 在可视化编辑器「首屏轮播」里可增删帧、换图、改顺序/时长/标注
+   - 静态图帧：保留原有标题 / 正文 / CTA
+   - 视频帧：文字层自动淡出，画面完整呈现
+   - 每个视频帧拥有独立的 video 元素与循环起止点，数量不限 */
 (function () {
   var hero = document.querySelector('.hero');
   if (!hero) return;
@@ -9,17 +11,61 @@
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var mobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-  var LOOP_START = 4.2;    /* 跳过 0–4s 纯黑字幕片头 */
-  var LOOP_END = 69.0;     /* 结尾淡黑前跳回 */
-  var watchMode = false;   /* 访客正在完整观看品牌片 */
-  var paused = false;      /* 自动轮播暂停（开原声 / 暂停 / 看全片 / 页面隐藏） */
-  var idx = 0, timer = null;
+  var watchMode = false;   /* 访客正在完整观看影片 */
+  var paused = false;      /* 自动轮播暂停 */
+  var idx = 0, timer = null, filmVideo = null;
 
-  var FRAMES = [
-    { type: 'image', src: 'assets/img/hero-greatwall.jpg',  caption: 'The Great Wall · Sunrise',       dur: 7000 },
-    { type: 'video',                                        caption: 'Jing · Meet China · Brand Film', dur: 22000 },
-    { type: 'image', src: 'assets/img/dest-chongqing.jpg',  caption: 'Chongqing · Hongyadong',        dur: 7000 }
+  /* 配置缺失时的兜底（保证页面永远有首屏） */
+  var DEFAULT = [
+    { type: 'image', src: 'assets/img/hero-greatwall.jpg', caption: 'The Great Wall · Sunrise', dur: 7 },
+    { type: 'video', video: 'assets/video/hero-brand-1080.mp4', videoMobile: 'assets/video/hero-brand-720.mp4', poster: 'assets/video/hero-poster.jpg', caption: 'Jing · Meet China · Brand Film', dur: 22, loopStart: 4.2, loopEnd: 69 },
+    { type: 'image', src: 'assets/img/dest-chongqing.jpg', caption: 'Chongqing · Hongyadong', dur: 7 }
   ];
+
+  function norm(f) {
+    f = f || {};
+    var o = {
+      type: f.type === 'video' ? 'video' : 'image',
+      src: String(f.src || ''),
+      video: String(f.video || ''),
+      videoMobile: String(f.videoMobile || ''),
+      poster: String(f.poster || ''),
+      caption: String(f.caption || ''),
+      dur: Math.max(2, Math.min(180, Number(f.dur) || 7)) * 1000,
+      loopStart: Math.max(0, Number(f.loopStart) || 0),
+      loopEnd: Math.max(0, Number(f.loopEnd) || 0),
+      _v: null
+    };
+    if (o.type === 'video' && !o.video && !o.videoMobile) {
+      o.video = 'assets/video/hero-brand-1080.mp4';
+      o.videoMobile = 'assets/video/hero-brand-720.mp4';
+    }
+    if (o.type === 'video' && !o.poster) o.poster = o.src || 'assets/video/hero-poster.jpg';
+    return o;
+  }
+
+  var FRAMES = DEFAULT.map(norm);
+  try {
+    var cfgNode = document.getElementById('hero-slides');
+    if (cfgNode) {
+      var raw = JSON.parse(cfgNode.textContent || '');
+      if (Array.isArray(raw) && raw.length) {
+        var parsed = raw.map(norm).filter(function (f) {
+          return f.type === 'image' ? !!f.src : (!!f.video || !!f.videoMobile);
+        });
+        if (parsed.length) FRAMES = parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Hero slides config invalid, using defaults:', e);
+  }
+
+  function curFrame() { return FRAMES[idx]; }
+  function curVideo() { var f = curFrame(); return f ? f._v : null; }
+  function anyVideo() {
+    for (var i = 0; i < FRAMES.length; i++) if (FRAMES[i].type === 'video' && FRAMES[i]._v) return true;
+    return false;
+  }
 
   /* ---------- 媒体轨道 ---------- */
   hero.style.backgroundImage = 'none';
@@ -27,7 +73,56 @@
 
   var media = document.createElement('div'); media.className = 'hero-media';
   var track = document.createElement('div'); track.className = 'hero-track';
-  var video = null;
+
+  function playVideo(v) {
+    if (!v) return;
+    if (!watchMode && curVideo() !== v) return;   /* 不是当前帧，不抢播 */
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+  }
+  function tryPlay() { playVideo(curVideo()); }
+
+  function syncSound() {
+    var v = curVideo(); if (!v || !soundBtn) return;
+    setBtn(soundBtn, v.muted ? ICON.mute : ICON.sound, v.muted ? 'Sound on' : 'Mute', v.muted ? 'Turn on the original soundtrack' : 'Mute the video');
+  }
+  function syncPlay() {
+    var v = curVideo(); if (!v || !pauseBtn) return;
+    setBtn(pauseBtn, v.paused ? ICON.play : ICON.pause, v.paused ? 'Play' : 'Pause', v.paused ? 'Play background video' : 'Pause background video');
+  }
+  function refreshBar() { if (bar) bar.style.display = anyVideo() ? '' : 'none'; }
+
+  function degrade(f, v, frame) {
+    f.type = 'image';
+    f.src = f.poster || f.src;
+    f._v = null;
+    frame.className = 'hero-frame is-image';
+    frame.style.backgroundImage = "url('" + f.src + "')";
+    if (v && v.parentNode) v.parentNode.removeChild(v);
+    refreshBar();
+    go(idx);
+  }
+
+  function bindVideo(f, v, frame) {
+    v.addEventListener('loadeddata', function () { playVideo(v); });
+    v.addEventListener('canplay', function () { playVideo(v); });
+    v.addEventListener('loadedmetadata', function () {
+      if (!watchMode && f.loopStart > 0 && v.currentTime < f.loopStart) {
+        try { v.currentTime = f.loopStart; } catch (e) {}
+      }
+    });
+    v.addEventListener('timeupdate', function () {
+      if (watchMode && filmVideo === v) return;
+      if (curFrame() !== f) return;
+      if (f.loopEnd > 0 && v.currentTime >= f.loopEnd) {
+        try { v.currentTime = f.loopStart; } catch (e) {}
+      } else if (f.loopStart > 0 && v.currentTime < f.loopStart - 0.3) {
+        try { v.currentTime = f.loopStart; } catch (e) {}
+      }
+    });
+    v.addEventListener('play', function () { if (curFrame() === f) syncPlay(); });
+    v.addEventListener('pause', function () { if (curFrame() === f) syncPlay(); });
+    v.addEventListener('error', function () { degrade(f, v, frame); });
+  }
 
   FRAMES.forEach(function (f) {
     var frame = document.createElement('div');
@@ -36,15 +131,17 @@
       frame.style.backgroundImage = "url('" + f.src + "')";
       var pre = new Image(); pre.src = f.src;   /* 预加载，切换不白闪 */
     } else {
-      video = document.createElement('video');
-      video.className = 'hero-video';
-      video.src = 'assets/video/hero-brand-' + (mobile ? '720' : '1080') + '.mp4';
-      video.poster = 'assets/video/hero-poster.jpg';
-      video.muted = true; video.loop = true; video.playsInline = true;
-      video.preload = 'auto';
-      video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
-      video.setAttribute('aria-hidden', 'true');
-      frame.appendChild(video);
+      var v = document.createElement('video');
+      v.className = 'hero-video';
+      v.src = (mobile && f.videoMobile) ? f.videoMobile : (f.video || f.videoMobile);
+      if (f.poster) v.poster = f.poster;
+      v.muted = true; v.loop = true; v.playsInline = true;
+      v.preload = 'auto';
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      v.setAttribute('aria-hidden', 'true');
+      f._v = v;
+      frame.appendChild(v);
+      bindVideo(f, v, frame);
     }
     track.appendChild(frame);
   });
@@ -89,6 +186,7 @@
 
   var bar = document.createElement('div'); bar.className = 'hero-controls';
   hero.appendChild(bar);
+  refreshBar();
 
   if (mobile && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -112,103 +210,66 @@
     b.innerHTML = '<span class="hc-ico">' + icon + '</span><span class="hc-txt">' + label + '</span>';
     b.title = title; b.setAttribute('aria-label', title);
   }
-  function tryPlay() {
-    if (!video) return;
-    if (!watchMode && !hero.classList.contains('is-video-frame')) return;
-    var p = video.play(); if (p && p.catch) p.catch(function () {});
-  }
-  function syncSound() {
-    if (video && soundBtn) setBtn(soundBtn, video.muted ? ICON.mute : ICON.sound, video.muted ? 'Sound on' : 'Mute', video.muted ? 'Turn on the original soundtrack' : 'Mute the video');
-  }
-  function syncPlay() {
-    if (video && pauseBtn) setBtn(pauseBtn, video.paused ? ICON.play : ICON.pause, video.paused ? 'Play' : 'Pause', video.paused ? 'Play background video' : 'Pause background video');
-  }
 
   var soundBtn = makeBtn('hc-sound', ICON.mute, 'Sound on', 'Turn on the original soundtrack', function () {
-    if (!video) return;
-    video.muted = !video.muted;
-    if (!video.muted) {
+    var v = curVideo(); if (!v) return;
+    v.muted = !v.muted;
+    filmVideo = v;
+    if (!v.muted) {
       watchMode = true; pauseAuto();
-      try { video.currentTime = 0; } catch (e) {}
-      tryPlay();
+      try { v.currentTime = 0; } catch (e) {}
+      playVideo(v);
     } else {
-      watchMode = false;
-      try { video.currentTime = LOOP_START; } catch (e) {}
-      tryPlay(); resumeAuto();
+      watchMode = false; filmVideo = null;
+      try { v.currentTime = curFrame().loopStart; } catch (e) {}
+      playVideo(v); resumeAuto();
     }
     syncSound(); syncPlay();
   });
 
   var pauseBtn = makeBtn('hc-pause', ICON.pause, 'Pause', 'Pause background video', function () {
-    if (!video) return;
-    if (video.paused) { tryPlay(); resumeAuto(); }
-    else { video.pause(); pauseAuto(); }
+    var v = curVideo(); if (!v) return;
+    if (v.paused) { playVideo(v); resumeAuto(); }
+    else { v.pause(); pauseAuto(); }
     syncPlay();
   });
-  if (video) {
-    video.addEventListener('play', syncPlay);
-    video.addEventListener('pause', syncPlay);
-  }
 
-  makeBtn('hc-film', ICON.expand, 'Watch full film', 'Watch the full brand film with sound', function () {
-    if (!video) return;
-    watchMode = true; pauseAuto();
-    video.controls = true; video.muted = false;
-    try { video.currentTime = 0; } catch (e) {}
-    tryPlay(); syncSound();
-    if (video.requestFullscreen) {
-      var p = video.requestFullscreen(); if (p && p.catch) p.catch(function () {});
-    } else if (video.webkitEnterFullscreen) {
-      video.webkitEnterFullscreen();
+  makeBtn('hc-film', ICON.expand, 'Watch full film', 'Watch the full film with sound', function () {
+    var v = curVideo(); if (!v) return;
+    watchMode = true; filmVideo = v; pauseAuto();
+    v.controls = true; v.muted = false;
+    try { v.currentTime = 0; } catch (e) {}
+    playVideo(v); syncSound();
+    if (v.requestFullscreen) {
+      var p = v.requestFullscreen(); if (p && p.catch) p.catch(function () {});
+    } else if (v.webkitEnterFullscreen) {
+      v.webkitEnterFullscreen();
     }
   });
 
   function leaveFilm() {
     if (!watchMode) return;
-    watchMode = false;
-    if (video) {
-      video.controls = false; video.muted = true;
-      try { video.currentTime = LOOP_START; } catch (e) {}
-      tryPlay();
+    var v = filmVideo || curVideo();
+    watchMode = false; filmVideo = null;
+    if (v) {
+      v.controls = false; v.muted = true;
+      var f = curFrame();
+      try { v.currentTime = f ? f.loopStart : 0; } catch (e) {}
+      playVideo(v);
     }
     syncSound(); syncPlay(); resumeAuto();
   }
   document.addEventListener('fullscreenchange', function () {
-    if (document.fullscreenElement !== video) leaveFilm();
+    if (document.fullscreenElement !== filmVideo) leaveFilm();
   });
-  if (video) video.addEventListener('webkitendfullscreen', leaveFilm);
-
-  /* ---------- 视频起播校正 / 失败降级 ---------- */
-  if (video) {
-    video.addEventListener('loadeddata', tryPlay);
-    video.addEventListener('canplay', tryPlay);
-    video.addEventListener('loadedmetadata', function () {
-      if (!watchMode && video.currentTime < LOOP_START) { try { video.currentTime = LOOP_START; } catch (e) {} }
-    });
-    video.addEventListener('timeupdate', function () {
-      if (watchMode) return;
-      if (video.currentTime < LOOP_START - 0.3 || video.currentTime >= LOOP_END) {
-        try { video.currentTime = LOOP_START; } catch (e) {}
-      }
-    });
-    video.addEventListener('error', function () {
-      var frame = video.parentNode;
-      if (frame) {
-        frame.className = 'hero-frame is-image';
-        frame.style.backgroundImage = "url('assets/video/hero-poster.jpg')";
-        frame.removeChild(video);
-      }
-      video = null;
-      FRAMES.forEach(function (f) { if (f.type === 'video') { f.type = 'image'; f.caption = 'Jing · Meet China'; } });
-      if (bar.parentNode) bar.parentNode.removeChild(bar);
-      go(idx);
-    });
-  }
+  FRAMES.forEach(function (f) {
+    if (f._v) f._v.addEventListener('webkitendfullscreen', leaveFilm);
+  });
 
   /* ---------- 轮播调度 ---------- */
   function schedule() {
     clearTimeout(timer);
-    var dur = FRAMES[idx].dur;
+    var dur = curFrame().dur;
     progBar.style.animation = 'none';
     void progBar.offsetWidth;                       /* 强制重排，重启动画 */
     progBar.style.animation = 'hero-progress-fill ' + dur + 'ms linear forwards';
@@ -224,12 +285,16 @@
   function go(n) {
     idx = (n + FRAMES.length) % FRAMES.length;
     track.style.transform = 'translateX(-' + (idx * 100) + '%)';
-    var isVid = FRAMES[idx].type === 'video' && !!video;
+    var f = curFrame();
+    var isVid = f.type === 'video' && !!f._v;
     hero.classList.toggle('is-video-frame', isVid);
-    cap.textContent = FRAMES[idx].caption || '';
+    cap.textContent = f.caption || '';
     dots.forEach(function (d, i) { d.classList.toggle('is-on', i === idx); });
-    if (video) { if (isVid) tryPlay(); else video.pause(); }
+    FRAMES.forEach(function (x) { if (x._v && x._v !== f._v) x._v.pause(); });
+    if (f._v) playVideo(f._v);
     if (!isVid && watchMode) leaveFilm();
+    refreshBar();
+    syncSound(); syncPlay();
     schedule();
   }
 
