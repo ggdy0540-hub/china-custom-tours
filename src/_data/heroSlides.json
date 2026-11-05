@@ -1,0 +1,25 @@
+[
+  {
+    "type": "image",
+    "src": "/assets/img/hero-greatwall.jpg",
+    "caption": "The Great Wall · Sunrise",
+    "dur": 7
+  },
+  {
+    "type": "video",
+    "src": "/assets/video/hero-poster.jpg",
+    "caption": "Jing · Meet China · Brand Film",
+    "dur": 22,
+    "video": "/assets/video/hero-brand-1080.mp4",
+    "videoMobile": "/assets/video/hero-brand-720.mp4",
+    "poster": "/assets/video/hero-poster.jpg",
+    "loopStart": 4.2,
+    "loopEnd": 69
+  },
+  {
+    "type": "image",
+    "src": "/assets/img/dest-chongqing.jpg",
+    "caption": "Chongqing · Hongyadong",
+    "dur": 7
+  }
+]
